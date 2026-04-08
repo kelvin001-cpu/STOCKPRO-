@@ -3,213 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro Ultra - Gestão & Bot</title>
+    <title>StockPro Ultra - V3 Visual Fix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #05070a; color: #e2e8f0; }
-        .glass-card { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 1rem; }
-        .input-dark { background: #111827; border: 1px solid #374151; color: white; transition: all 0.3s ease; }
-        .input-dark:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
-        .btn-primary { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); transition: transform 0.2s; }
-        .btn-primary:hover { transform: translateY(-2px); }
-        
-        /* Estilo do Chatbot */
-        #chat-container { position: fixed; bottom: 20px; right: 20px; width: 300px; z-index: 50; display: none; }
-        .chat-bubble { background: #1f2937; border: 1px solid #3b82f6; border-radius: 15px 15px 0 15px; padding: 10px; margin-bottom: 10px; font-size: 0.85rem; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0d1117; color: #e6edf3; }
+        .glass-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; }
+        .input-dark { background: #0d1117; border: 1px solid #30363d; color: white; }
+        .input-dark:focus { border-color: #58a6ff; outline: none; }
+        .btn-blue { background-color: #238636; transition: 0.2s; } /* Verde para salvar fica melhor */
+        .btn-blue:hover { background-color: #2ea043; }
+        .img-thumb { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #fff; }
     </style>
 </head>
-<body class="p-4 md:p-10 pb-24">
+<body class="p-4 md:p-8">
 
-    <div class="max-w-7xl mx-auto">
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
-            <div>
-                <h1 class="text-4xl font-extrabold text-white tracking-tighter">
-                    STOCK<span class="text-blue-500 italic">PRO</span> <span class="text-xs font-light text-slate-500 ml-2">v2.5</span>
-                </h1>
-                <p class="text-slate-400 mt-1">Gestão de estoque com Assistente de Contas.</p>
-            </div>
-            <div class="flex gap-3 bg-gray-900/50 p-1 rounded-xl border border-gray-800">
-                <button onclick="exportarDados()" class="px-5 py-2 rounded-lg text-blue-400 hover:bg-blue-900/20 transition text-sm font-semibold"><i class="fas fa-download mr-2"></i>BACKUP</button>
-            </div>
+    <div class="max-w-5xl mx-auto">
+        <header class="mb-8 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-white">STOCK<span class="text-blue-500">PRO</span> <span class="text-xs font-normal text-gray-500">V3.0</span></h1>
+            <button onclick="limparTudo()" class="text-xs text-red-500 hover:underline">Resetar Estoque</button>
         </header>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-            <div class="glass-card p-6 border-l-4 border-blue-500">
-                <span class="text-slate-500 text-xs font-bold uppercase">Investimento</span>
-                <h2 id="total-investido" class="text-2xl font-bold mt-1 text-white">R$ 0,00</h2>
-            </div>
-            <div class="glass-card p-6 border-l-4 border-green-500">
-                <span class="text-slate-500 text-xs font-bold uppercase">Lucro Total</span>
-                <h2 id="total-lucro" class="text-2xl font-bold mt-1 text-green-400">R$ 0,00</h2>
-            </div>
-            <div class="glass-card p-6 border-l-4 border-purple-500">
-                <span class="text-slate-500 text-xs font-bold uppercase">Produtos</span>
-                <h2 id="total-itens" class="text-2xl font-bold mt-1 text-white">0</h2>
-            </div>
-            <div class="glass-card p-6 border-l-4 border-orange-500">
-                <span class="text-slate-500 text-xs font-bold uppercase">Margem Média</span>
-                <h2 id="margem-media" class="text-2xl font-bold mt-1 text-orange-400">0%</h2>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="glass-card p-6">
-                <h3 class="text-lg font-bold mb-4 flex items-center text-blue-500"><i class="fas fa-plus-circle mr-2"></i>Novo Item</h3>
-                <div class="space-y-4">
-                    <input type="text" id="p-nome" placeholder="Produto" class="w-full p-3 rounded-lg input-dark">
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="number" id="p-custo" placeholder="Custo R$" class="p-3 rounded-lg input-dark">
-                        <input type="number" id="p-venda" placeholder="Venda R$" class="p-3 rounded-lg input-dark">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="glass-card p-5 h-fit">
+                <h2 class="text-sm font-semibold mb-4 text-gray-400 uppercase tracking-wider">Cadastrar Item</h2>
+                <div class="space-y-3">
+                    <input type="text" id="p-nome" placeholder="Nome do Produto" class="w-full p-2 rounded input-dark text-sm">
+                    <input type="text" id="p-img" placeholder="Link da Imagem (URL)" class="w-full p-2 rounded input-dark text-xs">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="number" id="p-custo" placeholder="Custo R$" class="p-2 rounded input-dark text-sm">
+                        <input type="number" id="p-venda" placeholder="Venda R$" class="p-2 rounded input-dark text-sm">
                     </div>
-                    <input type="number" id="p-qtd" placeholder="Quantidade" class="w-full p-3 rounded-lg input-dark">
-                    <button onclick="adicionarProduto()" class="w-full btn-primary text-white font-bold py-3 rounded-lg">ADICIONAR</button>
+                    <input type="number" id="p-qtd" placeholder="Qtd" class="w-full p-2 rounded input-dark text-sm">
+                    <button onclick="adicionarProduto()" class="w-full btn-blue text-white font-bold py-2 rounded text-sm uppercase">Adicionar ao Estoque</button>
                 </div>
             </div>
 
             <div class="lg:col-span-2">
                 <div class="glass-card overflow-hidden">
                     <table class="w-full text-left">
-                        <thead class="bg-gray-800/50 text-slate-400 text-xs uppercase">
+                        <thead class="bg-[#1f242c] text-gray-400 text-[10px] uppercase">
                             <tr>
-                                <th class="p-4">Produto / Margem</th>
+                                <th class="p-4">Produto</th>
                                 <th class="p-4 text-center">Qtd</th>
-                                <th class="p-4">Custo/Venda</th>
-                                <th class="p-4">Lucro</th>
+                                <th class="p-4">Preço</th>
                                 <th class="p-4 text-right">Ação</th>
                             </tr>
                         </thead>
-                        <tbody id="tabela-corpo" class="text-sm"></tbody>
+                        <tbody id="tabela-corpo" class="divide-y divide-[#30363d]">
+                            </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="chat-container" class="glass-card p-4 shadow-2xl border-blue-500/50">
-        <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
-            <span class="font-bold text-blue-400 text-sm"><i class="fas fa-robot mr-2"></i>Assistente StockPro</span>
-            <button onclick="toggleChat()" class="text-slate-500 hover:text-white">×</button>
-        </div>
-        <div id="chat-content" class="h-48 overflow-y-auto mb-4 space-y-2">
-            <div class="chat-bubble">Olá! Me diga quanto você pagou no produto que eu te ajudo a calcular o preço de venda.</div>
-        </div>
-        <div class="space-y-2">
-            <input type="number" id="bot-custo" placeholder="Quanto custou? R$" class="w-full p-2 text-xs rounded input-dark">
-            <input type="number" id="bot-lucro" placeholder="Margem desejada % (Ex: 30)" class="w-full p-2 text-xs rounded input-dark">
-            <button onclick="calcularBot()" class="w-full bg-blue-600 text-[10px] font-bold py-2 rounded hover:bg-blue-500 transition">CALCULAR PREÇO</button>
-        </div>
-    </div>
-
-    <button onclick="toggleChat()" class="fixed bottom-5 right-5 w-14 h-14 bg-blue-600 rounded-full shadow-lg flex items-center justify-center text-white hover:scale-110 transition-all z-50">
-        <i class="fas fa-calculator text-xl"></i>
-    </button>
-
     <script>
-        const itensIniciais = [
-            { id: 1, nome: "AIR PODS MAX", custo: 160.00, venda: 190.00, qtd: 1 },
-            { id: 2, nome: "FONE M90 PRO", custo: 30.00, venda: 40.00, qtd: 1 },
-            { id: 3, nome: "POWER BANK INOVA", custo: 35.00, venda: 50.00, qtd: 1 },
-            { id: 16, nome: "AIR PODS PRO (COM BORRACHA)", custo: 80.00, venda: 130.00, qtd: 1 }
+        const DB_KEY = 'stockpro_v3_db';
+        
+        // IMAGENS DIRETAS (TESTADAS)
+        const iniciais = [
+            { id: 1, nome: "AIRPODS MAX", custo: 150, venda: 250, qtd: 5, img: "https://i.imgur.com/8N4uC6S.jpg" },
+            { id: 2, nome: "SMARTWATCH D20", custo: 30, venda: 80, qtd: 12, img: "https://i.imgur.com/6S3D6Xp.jpg" },
+            { id: 3, nome: "CAIXA JBL GO 3", custo: 120, venda: 220, qtd: 3, img: "https://i.imgur.com/uM97Sms.jpg" },
+            { id: 4, nome: "FONE GAMER", custo: 45, venda: 110, qtd: 0, img: "https://i.imgur.com/vHEx3e8.jpg" }
         ];
 
-        let produtos = JSON.parse(localStorage.getItem('produtos_v2')) || itensIniciais;
-
-        function toggleChat() {
-            const chat = document.getElementById('chat-container');
-            chat.style.display = chat.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function calcularBot() {
-            const custo = parseFloat(document.getElementById('bot-custo').value);
-            const margem = parseFloat(document.getElementById('bot-lucro').value) || 30;
-            const chatContent = document.getElementById('chat-content');
-
-            if(!custo) return;
-
-            const vendaIdeal = custo / (1 - (margem / 100));
-            const lucroReais = vendaIdeal - custo;
-
-            chatContent.innerHTML += `
-                <div class="chat-bubble bg-blue-900/30">
-                    💰 Para ganhar <b>${margem}%</b>:<br>
-                    Venda por: <b>R$ ${vendaIdeal.toFixed(2)}</b><br>
-                    Lucro limpo: R$ ${lucroReais.toFixed(2)} por peça.
-                </div>
-            `;
-            chatContent.scrollTop = chatContent.scrollHeight;
-        }
+        let produtos = JSON.parse(localStorage.getItem(DB_KEY)) || iniciais;
 
         function adicionarProduto() {
             const nome = document.getElementById('p-nome').value.toUpperCase();
-            const custo = parseFloat(document.getElementById('p-custo').value);
-            const venda = parseFloat(document.getElementById('p-venda').value);
+            const img = document.getElementById('p-img').value;
+            const custo = parseFloat(document.getElementById('p-custo').value) || 0;
+            const venda = parseFloat(document.getElementById('p-venda').value) || 0;
             const qtd = parseInt(document.getElementById('p-qtd').value) || 0;
-            if(!nome || isNaN(custo) || isNaN(venda)) return alert("Preencha tudo!");
-            produtos.push({ id: Date.now(), nome, custo, venda, qtd });
+
+            if(!nome) return alert("Dê um nome ao produto!");
+
+            produtos.push({ id: Date.now(), nome, img, custo, venda, qtd });
             salvar();
+            // Limpar campos
+            document.getElementById('p-nome').value = '';
+            document.getElementById('p-img').value = '';
         }
 
-        function alterarQtd(id, delta) {
-            const p = produtos.find(p => p.id === id);
-            p.qtd = Math.max(0, p.qtd + delta);
+        function mudarQtd(id, n) {
+            const p = produtos.find(x => x.id === id);
+            p.qtd = Math.max(0, p.qtd + n);
             salvar();
         }
 
         function deletar(id) {
-            if(confirm("Remover item?")) { produtos = produtos.filter(p => p.id !== id); salvar(); }
+            if(confirm("Remover item?")) {
+                produtos = produtos.filter(x => x.id !== id);
+                salvar();
+            }
+        }
+
+        function limparTudo() {
+            if(confirm("Isso vai apagar TUDO. Tem certeza?")) {
+                produtos = iniciais;
+                salvar();
+            }
         }
 
         function salvar() {
-            localStorage.setItem('produtos_v2', JSON.stringify(produtos));
+            localStorage.setItem(DB_KEY, JSON.stringify(produtos));
             render();
         }
 
         function render() {
             const corpo = document.getElementById('tabela-corpo');
             corpo.innerHTML = '';
-            let inv = 0, luc = 0, margTotal = 0;
 
             produtos.forEach(p => {
-                const lucroU = p.venda - p.custo;
-                const marg = ((lucroU / p.venda) * 100) || 0;
-                inv += (p.custo * p.qtd);
-                luc += (lucroU * p.qtd);
-                margTotal += marg;
+                const esgotado = p.qtd <= 0;
+                // Se não tiver imagem, usa um ícone de pacote
+                const foto = p.img || 'https://cdn-icons-png.flaticon.com/512/679/679821.png';
 
                 corpo.innerHTML += `
-                    <tr class="border-t border-gray-800">
-                        <td class="p-4">
-                            <div class="font-bold">${p.nome}</div>
-                            <div class="text-[10px] text-blue-400">${marg.toFixed(1)}% de margem</div>
-                        </td>
-                        <td class="p-4 text-center">
-                            <div class="flex items-center justify-center gap-2">
-                                <button onclick="alterarQtd(${p.id}, -1)" class="w-6 h-6 bg-gray-800 rounded">-</button>
-                                <span>${p.qtd}</span>
-                                <button onclick="alterarQtd(${p.id}, 1)" class="w-6 h-6 bg-gray-800 rounded">+</button>
+                    <tr class="hover:bg-[#1c2128] transition">
+                        <td class="p-4 flex items-center gap-3">
+                            <img src="${foto}" class="img-thumb" onerror="this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png'">
+                            <div>
+                                <div class="font-bold text-sm ${esgotado ? 'text-gray-500 line-through' : 'text-white'}">${p.nome}</div>
+                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${esgotado ? 'bg-red-900 text-red-200' : 'bg-green-900 text-green-200'}">
+                                    ${esgotado ? 'ESGOTADO' : 'ATIVO'}
+                                </span>
                             </div>
                         </td>
-                        <td class="p-4 text-xs text-slate-400">C: ${p.custo.toFixed(2)}<br><b class="text-white text-sm">V: ${p.venda.toFixed(2)}</b></td>
-                        <td class="p-4 font-bold text-green-400">R$ ${(lucroU * p.qtd).toFixed(2)}</td>
-                        <td class="p-4 text-right"><button onclick="deletar(${p.id})" class="text-gray-600 hover:text-red-500"><i class="fas fa-trash"></i></button></td>
+                        <td class="p-4 text-center">
+                            <div class="flex items-center justify-center gap-3">
+                                <button onclick="mudarQtd(${p.id}, -1)" class="text-red-500 hover:scale-125">-</button>
+                                <span class="text-sm font-mono">${p.qtd}</span>
+                                <button onclick="mudarQtd(${p.id}, 1)" class="text-green-500 hover:scale-125">+</button>
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <div class="text-xs text-green-400 font-bold">R$ ${p.venda.toFixed(2)}</div>
+                        </td>
+                        <td class="p-4 text-right">
+                            <button onclick="deletar(${p.id})" class="text-gray-600 hover:text-red-500"><i class="fas fa-trash-alt"></i></button>
+                        </td>
                     </tr>
                 `;
             });
-
-            document.getElementById('total-investido').innerText = `R$ ${inv.toFixed(2)}`;
-            document.getElementById('total-lucro').innerText = `R$ ${luc.toFixed(2)}`;
-            document.getElementById('total-itens').innerText = produtos.length;
-            document.getElementById('margem-media').innerText = `${(margTotal / (produtos.length || 1)).toFixed(1)}%`;
-        }
-
-        function exportarDados() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(produtos));
-            const dl = document.createElement('a');
-            dl.setAttribute("href", dataStr);
-            dl.setAttribute("download", "estoque_backup.json");
-            dl.click();
         }
 
         render();
