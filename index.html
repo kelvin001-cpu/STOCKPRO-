@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro Ultra - Gestão de Vendas</title>
+    <title>StockPro Ultra - Gestão de Revenda</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -127,21 +127,28 @@
     </div>
 
     <script>
-        // ITENS DA SUA FOTO PRÉ-CARREGADOS
+        // LISTA ATUALIZADA COM BASE NA SUA FOTO
         const itensIniciais = [
-            { id: 1, nome: "AIR PODS MAX", custo: 160.00, venda: 190.00, qtd: 5 },
-            { id: 2, nome: "FONE M90 PRO", custo: 30.00, venda: 40.00, qtd: 12 },
-            { id: 3, nome: "POWER BANK INOVA", custo: 35.00, venda: 50.00, qtd: 0 },
-            { id: 4, nome: "CABO IPHONE 2EM1 60W", custo: 35.00, venda: 40.00, qtd: 20 },
-            { id: 5, nome: "CARREGADOR PARA CARRO 35W", custo: 22.50, venda: 35.00, qtd: 8 },
-            { id: 6, nome: "POWER BANK MD-12410", custo: 70.00, venda: 90.00, qtd: 3 },
-            { id: 7, nome: "POWER BANK KA-9555", custo: 105.00, venda: 130.00, qtd: 2 },
-            { id: 8, nome: "MIX PORTÁTIL OIH-2450", custo: 23.00, venda: 30.00, qtd: 15 },
-            { id: 9, nome: "MOUSEPAD KA-600", custo: 20.00, venda: 30.00, qtd: 10 },
-            { id: 10, nome: "CARREGADOR TURBO IPHONE 20W", custo: 35.00, venda: 50.00, qtd: 0 },
-            { id: 11, nome: "BARBEADOR ELETRICO", custo: 67.43, venda: 80.00, qtd: 4 },
-            { id: 12, nome: "AIR PODS PRO (COM BORRACHA)", custo: 80.00, venda: 130.00, qtd: 6 },
-            { id: 13, nome: "CARREGADOR TURBO ANDROID 35W", custo: 35.90, venda: 45.00, qtd: 9 }
+            { id: 1, nome: "AIR PODS MAX", custo: 160.00, venda: 190.00, qtd: 1 },
+            { id: 2, nome: "FONE M90 PRO", custo: 30.00, venda: 40.00, qtd: 1 },
+            { id: 3, nome: "POWER BANK INOVA", custo: 35.00, venda: 50.00, qtd: 1 },
+            { id: 4, nome: "POWER BANK (60W/90W)", custo: 60.00, venda: 90.00, qtd: 1 },
+            { id: 5, nome: "POWER BANK KA-9921", custo: 100.00, venda: 130.00, qtd: 1 },
+            { id: 6, nome: "CABO IPHONE 2EM1 60W", custo: 35.00, venda: 40.00, qtd: 1 },
+            { id: 7, nome: "CARREGADOR PARA CARRO 35W", custo: 22.50, venda: 35.00, qtd: 1 },
+            { id: 8, nome: "CARREGADOR (40W/55W)", custo: 40.00, venda: 55.00, qtd: 1 },
+            { id: 9, nome: "POWER BANK MD-12410", custo: 70.00, venda: 90.00, qtd: 1 },
+            { id: 10, nome: "POWER BANK KA-9555", custo: 105.00, venda: 130.00, qtd: 1 },
+            { id: 11, nome: "MIX PORTÁTIL OIH-2450", custo: 23.00, venda: 30.00, qtd: 1 },
+            { id: 12, nome: "MOUSEPAD KA-600", custo: 20.00, venda: 30.00, qtd: 1 },
+            { id: 13, nome: "CARREGADOR TURBO IPHONE 20W", custo: 35.00, venda: 50.00, qtd: 1 },
+            { id: 14, nome: "CARREGADOR TURBO ANDROID", custo: 35.00, venda: 40.00, qtd: 1 },
+            { id: 15, nome: "BARBEADOR ELETRICO", custo: 67.43, venda: 80.00, qtd: 1 },
+            { id: 16, nome: "AIR PODS PRO (COM BORRACHA)", custo: 80.00, venda: 130.00, qtd: 1 },
+            { id: 17, nome: "AIR PODS PRO (SEM BORRACHA)", custo: 60.00, venda: 80.00, qtd: 1 },
+            { id: 18, nome: "CARREGADOR TURBO IPHONE 35W", custo: 40.90, venda: 50.00, qtd: 1 },
+            { id: 19, nome: "CARREGADOR TURBO ANDROID 35W", custo: 35.90, venda: 45.00, qtd: 1 },
+            { id: 20, nome: "CARREGADOR VEICULAR TURBO 45W", custo: 26.00, venda: 35.00, qtd: 1 }
         ];
 
         let produtos = JSON.parse(localStorage.getItem('produtos_v2')) || itensIniciais;
