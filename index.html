@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro Ultra - V3 Visual Fix</title>
+    <title>StockPro Ultra - V3.1 Clean</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -12,16 +12,15 @@
         .glass-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; }
         .input-dark { background: #0d1117; border: 1px solid #30363d; color: white; }
         .input-dark:focus { border-color: #58a6ff; outline: none; }
-        .btn-blue { background-color: #238636; transition: 0.2s; } /* Verde para salvar fica melhor */
+        .btn-blue { background-color: #238636; transition: 0.2s; }
         .btn-blue:hover { background-color: #2ea043; }
-        .img-thumb { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #fff; }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div class="max-w-5xl mx-auto">
         <header class="mb-8 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-white">STOCK<span class="text-blue-500">PRO</span> <span class="text-xs font-normal text-gray-500">V3.0</span></h1>
+            <h1 class="text-2xl font-bold text-white">STOCK<span class="text-blue-500">PRO</span> <span class="text-xs font-normal text-gray-500">V3.1</span></h1>
             <button onclick="limparTudo()" class="text-xs text-red-500 hover:underline">Resetar Estoque</button>
         </header>
 
@@ -30,13 +29,12 @@
                 <h2 class="text-sm font-semibold mb-4 text-gray-400 uppercase tracking-wider">Cadastrar Item</h2>
                 <div class="space-y-3">
                     <input type="text" id="p-nome" placeholder="Nome do Produto" class="w-full p-2 rounded input-dark text-sm">
-                    <input type="text" id="p-img" placeholder="Link da Imagem (URL)" class="w-full p-2 rounded input-dark text-xs">
                     <div class="grid grid-cols-2 gap-2">
                         <input type="number" id="p-custo" placeholder="Custo R$" class="p-2 rounded input-dark text-sm">
                         <input type="number" id="p-venda" placeholder="Venda R$" class="p-2 rounded input-dark text-sm">
                     </div>
-                    <input type="number" id="p-qtd" placeholder="Qtd" class="w-full p-2 rounded input-dark text-sm">
-                    <button onclick="adicionarProduto()" class="w-full btn-blue text-white font-bold py-2 rounded text-sm uppercase">Adicionar ao Estoque</button>
+                    <input type="number" id="p-qtd" placeholder="Quantidade inicial" class="w-full p-2 rounded input-dark text-sm">
+                    <button onclick="adicionarProduto()" class="w-full btn-blue text-white font-bold py-2 rounded text-sm uppercase">Salvar no Estoque</button>
                 </div>
             </div>
 
@@ -45,14 +43,14 @@
                     <table class="w-full text-left">
                         <thead class="bg-[#1f242c] text-gray-400 text-[10px] uppercase">
                             <tr>
-                                <th class="p-4">Produto</th>
+                                <th class="p-4">Produto / Status</th>
                                 <th class="p-4 text-center">Qtd</th>
-                                <th class="p-4">Preço</th>
+                                <th class="p-4">Custo</th>
+                                <th class="p-4">Venda</th>
                                 <th class="p-4 text-right">Ação</th>
                             </tr>
                         </thead>
-                        <tbody id="tabela-corpo" class="divide-y divide-[#30363d]">
-                            </tbody>
+                        <tbody id="tabela-corpo" class="divide-y divide-[#30363d]"></tbody>
                     </table>
                 </div>
             </div>
@@ -60,32 +58,31 @@
     </div>
 
     <script>
-        const DB_KEY = 'stockpro_v3_db';
+        const DB_KEY = 'stockpro_v3_clean';
         
-        // IMAGENS DIRETAS (TESTADAS)
         const iniciais = [
-            { id: 1, nome: "AIRPODS MAX", custo: 150, venda: 250, qtd: 5, img: "https://i.imgur.com/8N4uC6S.jpg" },
-            { id: 2, nome: "SMARTWATCH D20", custo: 30, venda: 80, qtd: 12, img: "https://i.imgur.com/6S3D6Xp.jpg" },
-            { id: 3, nome: "CAIXA JBL GO 3", custo: 120, venda: 220, qtd: 3, img: "https://i.imgur.com/uM97Sms.jpg" },
-            { id: 4, nome: "FONE GAMER", custo: 45, venda: 110, qtd: 0, img: "https://i.imgur.com/vHEx3e8.jpg" }
+            { id: 1, nome: "AIRPODS MAX", custo: 150, venda: 250, qtd: 5 },
+            { id: 2, nome: "SMARTWATCH D20", custo: 30, venda: 80, qtd: 12 },
+            { id: 3, nome: "CAIXA JBL GO 3", custo: 120, venda: 220, qtd: 3 }
         ];
 
         let produtos = JSON.parse(localStorage.getItem(DB_KEY)) || iniciais;
 
         function adicionarProduto() {
             const nome = document.getElementById('p-nome').value.toUpperCase();
-            const img = document.getElementById('p-img').value;
             const custo = parseFloat(document.getElementById('p-custo').value) || 0;
             const venda = parseFloat(document.getElementById('p-venda').value) || 0;
             const qtd = parseInt(document.getElementById('p-qtd').value) || 0;
 
             if(!nome) return alert("Dê um nome ao produto!");
 
-            produtos.push({ id: Date.now(), nome, img, custo, venda, qtd });
+            produtos.push({ id: Date.now(), nome, custo, venda, qtd });
             salvar();
-            // Limpar campos
+            
             document.getElementById('p-nome').value = '';
-            document.getElementById('p-img').value = '';
+            document.getElementById('p-custo').value = '';
+            document.getElementById('p-venda').value = '';
+            document.getElementById('p-qtd').value = '';
         }
 
         function mudarQtd(id, n) {
@@ -103,7 +100,7 @@
 
         function limparTudo() {
             if(confirm("Isso vai apagar TUDO. Tem certeza?")) {
-                produtos = iniciais;
+                produtos = [];
                 salvar();
             }
         }
@@ -119,32 +116,28 @@
 
             produtos.forEach(p => {
                 const esgotado = p.qtd <= 0;
-                // Se não tiver imagem, usa um ícone de pacote
-                const foto = p.img || 'https://cdn-icons-png.flaticon.com/512/679/679821.png';
 
                 corpo.innerHTML += `
                     <tr class="hover:bg-[#1c2128] transition">
-                        <td class="p-4 flex items-center gap-3">
-                            <img src="${foto}" class="img-thumb" onerror="this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png'">
-                            <div>
-                                <div class="font-bold text-sm ${esgotado ? 'text-gray-500 line-through' : 'text-white'}">${p.nome}</div>
-                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${esgotado ? 'bg-red-900 text-red-200' : 'bg-green-900 text-green-200'}">
-                                    ${esgotado ? 'ESGOTADO' : 'ATIVO'}
-                                </span>
-                            </div>
+                        <td class="p-4">
+                            <div class="font-bold text-sm ${esgotado ? 'text-gray-500' : 'text-white'}">${p.nome}</div>
+                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${esgotado ? 'bg-red-900/30 text-red-400' : 'bg-green-900/30 text-green-400'}">
+                                ${esgotado ? 'ESGOTADO' : 'EM ESTOQUE'}
+                            </span>
                         </td>
                         <td class="p-4 text-center">
                             <div class="flex items-center justify-center gap-3">
-                                <button onclick="mudarQtd(${p.id}, -1)" class="text-red-500 hover:scale-125">-</button>
-                                <span class="text-sm font-mono">${p.qtd}</span>
-                                <button onclick="mudarQtd(${p.id}, 1)" class="text-green-500 hover:scale-125">+</button>
+                                <button onclick="mudarQtd(${p.id}, -1)" class="text-red-500 hover:scale-125 px-2">-</button>
+                                <span class="text-sm font-mono w-4">${p.qtd}</span>
+                                <button onclick="mudarQtd(${p.id}, 1)" class="text-green-500 hover:scale-125 px-2">+</button>
                             </div>
                         </td>
-                        <td class="p-4">
-                            <div class="text-xs text-green-400 font-bold">R$ ${p.venda.toFixed(2)}</div>
-                        </td>
+                        <td class="p-4 text-xs text-gray-400">R$ ${p.custo.toFixed(2)}</td>
+                        <td class="p-4 text-sm text-green-400 font-bold">R$ ${p.venda.toFixed(2)}</td>
                         <td class="p-4 text-right">
-                            <button onclick="deletar(${p.id})" class="text-gray-600 hover:text-red-500"><i class="fas fa-trash-alt"></i></button>
+                            <button onclick="deletar(${p.id})" class="text-gray-600 hover:text-red-500 transition">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                         </td>
                     </tr>
                 `;
