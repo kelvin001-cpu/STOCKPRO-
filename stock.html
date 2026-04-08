@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockPro Ultra - Gestão de Vendas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif;
+            background-color: #05070a; 
+            color: #e2e8f0; 
+        }
+
+        .glass-card { 
+            background: rgba(17, 24, 39, 0.7); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+        }
+
+        .input-dark {
+            background: #111827;
+            border: 1px solid #374151;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .input-dark:focus {
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:hover { transform: translateY(-2px); }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #05070a; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+            <div>
+                <h1 class="text-4xl font-extrabold text-white tracking-tighter">
+                    STOCK<span class="text-blue-500 italic">PRO</span> <span class="text-xs font-light text-slate-500 uppercase tracking-widest ml-2 text-sm">v2.0</span>
+                </h1>
+                <p class="text-slate-400 mt-1">Gerenciamento inteligente de inventário e margem.</p>
+            </div>
+            
+            <div class="flex gap-3 bg-gray-900/50 p-1 rounded-xl border border-gray-800">
+                <button onclick="filtrar('todos')" class="px-5 py-2 rounded-lg hover:bg-gray-800 transition text-sm font-semibold">TUDO</button>
+                <button onclick="filtrar('falta')" class="px-5 py-2 rounded-lg text-red-400 hover:bg-red-900/20 transition text-sm font-semibold">FALTANDO</button>
+                <button onclick="exportarDados()" class="px-5 py-2 rounded-lg text-blue-400 hover:bg-blue-900/20 transition text-sm font-semibold"><i class="fas fa-download mr-2"></i>EXPORTAR</button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div class="glass-card p-6 border-l-4 border-blue-500">
+                <span class="text-slate-500 text-xs font-bold uppercase">Patrimônio em Estoque</span>
+                <h2 id="total-investido" class="text-2xl font-bold mt-1 text-white">R$ 0,00</h2>
+            </div>
+            <div class="glass-card p-6 border-l-4 border-green-500">
+                <span class="text-slate-500 text-xs font-bold uppercase">Lucro Projetado</span>
+                <h2 id="total-lucro" class="text-2xl font-bold mt-1 text-green-400">R$ 0,00</h2>
+            </div>
+            <div class="glass-card p-6 border-l-4 border-purple-500">
+                <span class="text-slate-500 text-xs font-bold uppercase">Mix de Produtos</span>
+                <h2 id="total-itens" class="text-2xl font-bold mt-1 text-white">0</h2>
+            </div>
+            <div class="glass-card p-6 border-l-4 border-orange-500">
+                <span class="text-slate-500 text-xs font-bold uppercase">Margem Média</span>
+                <h2 id="margem-media" class="text-2xl font-bold mt-1 text-orange-400">0%</h2>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+            <div class="glass-card p-6 lg:col-span-1">
+                <h3 class="text-lg font-bold mb-4 flex items-center"><i class="fas fa-plus-circle mr-2 text-blue-500"></i>Novo Item</h3>
+                <div class="space-y-4">
+                    <input type="text" id="p-nome" placeholder="Nome do Produto" class="w-full p-3 rounded-lg input-dark">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="p-custo" placeholder="Custo R$" class="p-3 rounded-lg input-dark">
+                        <input type="number" id="p-venda" placeholder="Venda R$" class="p-3 rounded-lg input-dark">
+                    </div>
+                    <input type="number" id="p-qtd" placeholder="Quantidade em Mãos" class="w-full p-3 rounded-lg input-dark">
+                    <button onclick="adicionarProduto()" class="w-full btn-primary text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-500/20">ADICIONAR AO SISTEMA</button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2">
+                <div class="glass-card p-4 mb-4 flex items-center px-6">
+                    <i class="fas fa-search text-slate-500 mr-4"></i>
+                    <input type="text" id="busca" onkeyup="render()" placeholder="Buscar produto na lista..." class="w-full bg-transparent border-none outline-none text-lg">
+                </div>
+                
+                <div class="glass-card overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-800/50 text-slate-400 text-xs uppercase tracking-widest">
+                                    <th class="p-4">Produto</th>
+                                    <th class="p-4 text-center">Qtd</th>
+                                    <th class="p-4">Custo / Venda</th>
+                                    <th class="p-4">Lucro</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-corpo" class="text-sm">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ITENS DA SUA FOTO PRÉ-CARREGADOS
+        const itensIniciais = [
+            { id: 1, nome: "AIR PODS MAX", custo: 160.00, venda: 190.00, qtd: 5 },
+            { id: 2, nome: "FONE M90 PRO", custo: 30.00, venda: 40.00, qtd: 12 },
+            { id: 3, nome: "POWER BANK INOVA", custo: 35.00, venda: 50.00, qtd: 0 },
+            { id: 4, nome: "CABO IPHONE 2EM1 60W", custo: 35.00, venda: 40.00, qtd: 20 },
+            { id: 5, nome: "CARREGADOR PARA CARRO 35W", custo: 22.50, venda: 35.00, qtd: 8 },
+            { id: 6, nome: "POWER BANK MD-12410", custo: 70.00, venda: 90.00, qtd: 3 },
+            { id: 7, nome: "POWER BANK KA-9555", custo: 105.00, venda: 130.00, qtd: 2 },
+            { id: 8, nome: "MIX PORTÁTIL OIH-2450", custo: 23.00, venda: 30.00, qtd: 15 },
+            { id: 9, nome: "MOUSEPAD KA-600", custo: 20.00, venda: 30.00, qtd: 10 },
+            { id: 10, nome: "CARREGADOR TURBO IPHONE 20W", custo: 35.00, venda: 50.00, qtd: 0 },
+            { id: 11, nome: "BARBEADOR ELETRICO", custo: 67.43, venda: 80.00, qtd: 4 },
+            { id: 12, nome: "AIR PODS PRO (COM BORRACHA)", custo: 80.00, venda: 130.00, qtd: 6 },
+            { id: 13, nome: "CARREGADOR TURBO ANDROID 35W", custo: 35.90, venda: 45.00, qtd: 9 }
+        ];
+
+        let produtos = JSON.parse(localStorage.getItem('produtos_v2')) || itensIniciais;
+
+        function adicionarProduto() {
+            const nome = document.getElementById('p-nome').value.toUpperCase();
+            const custo = parseFloat(document.getElementById('p-custo').value);
+            const venda = parseFloat(document.getElementById('p-venda').value);
+            const qtd = parseInt(document.getElementById('p-qtd').value) || 0;
+
+            if(!nome || isNaN(custo) || isNaN(venda)) return alert("Preencha os campos obrigatórios!");
+
+            produtos.push({ id: Date.now(), nome, custo, venda, qtd });
+            salvarERenderizar();
+            document.querySelectorAll('.input-dark').forEach(i => i.value = '');
+        }
+
+        function alterarQtd(id, delta) {
+            const p = produtos.find(p => p.id === id);
+            p.qtd = Math.max(0, p.qtd + delta);
+            salvarERenderizar();
+        }
+
+        function deletar(id) {
+            if(confirm("Deseja remover este produto?")) {
+                produtos = produtos.filter(p => p.id !== id);
+                salvarERenderizar();
+            }
+        }
+
+        function salvarERenderizar() {
+            localStorage.setItem('produtos_v2', JSON.stringify(produtos));
+            render();
+        }
+
+        function render(filtro = 'todos') {
+            const corpo = document.getElementById('tabela-corpo');
+            const busca = document.getElementById('busca').value.toUpperCase();
+            corpo.innerHTML = '';
+            
+            let invTotal = 0, lucTotal = 0, margens = 0;
+
+            produtos.forEach(p => {
+                const lucroUnd = p.venda - p.custo;
+                const lucroTotalItem = lucroUnd * p.qtd;
+                const margem = ((lucroUnd / p.venda) * 100) || 0;
+
+                if(filtro === 'falta' && p.qtd > 0) return;
+                if(busca && !p.nome.includes(busca)) return;
+
+                invTotal += (p.custo * p.qtd);
+                lucTotal += lucroTotalItem;
+                margens += margem;
+
+                const statusColor = p.qtd === 0 ? 'text-red-500 bg-red-500/10' : 'text-green-500 bg-green-500/10';
+
+                corpo.innerHTML += `
+                    <tr class="border-t border-gray-800 hover:bg-white/5 transition">
+                        <td class="p-4">
+                            <div class="font-bold text-white">${p.nome}</div>
+                            <div class="text-[10px] text-slate-500 tracking-wider">MARGEM: ${margem.toFixed(1)}%</div>
+                        </td>
+                        <td class="p-4">
+                            <div class="flex items-center justify-center gap-3 bg-gray-900 rounded-lg p-1 w-24 mx-auto">
+                                <button onclick="alterarQtd(${p.id}, -1)" class="text-slate-400 hover:text-white">-</button>
+                                <span class="font-bold">${p.qtd}</span>
+                                <button onclick="alterarQtd(${p.id}, 1)" class="text-slate-400 hover:text-white">+</button>
+                            </div>
+                        </td>
+                        <td class="p-4 text-slate-300">
+                            <span class="text-[10px] block text-slate-500">C: R$ ${p.custo.toFixed(2)}</span>
+                            R$ ${p.venda.toFixed(2)}
+                        </td>
+                        <td class="p-4 font-bold text-green-400">R$ ${lucroTotalItem.toFixed(2)}</td>
+                        <td class="p-4">
+                            <span class="px-2 py-1 rounded text-[10px] font-bold ${statusColor}">
+                                ${p.qtd === 0 ? 'ESGOTADO' : 'ATIVO'}
+                            </span>
+                        </td>
+                        <td class="p-4 text-right">
+                            <button onclick="deletar(${p.id})" class="text-slate-600 hover:text-red-400 transition"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('total-investido').innerText = `R$ ${invTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('total-lucro').innerText = `R$ ${lucTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('total-itens').innerText = produtos.length;
+            document.getElementById('margem-media').innerText = `${(margens / (produtos.length || 1)).toFixed(1)}%`;
+        }
+
+        function filtrar(tipo) { render(tipo); }
+        
+        function exportarDados() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(produtos));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "meu_estoque.json");
+            dlAnchorElem.click();
+        }
+
+        render();
+    </script>
+</body>
+</html>
