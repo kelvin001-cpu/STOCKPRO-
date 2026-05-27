@@ -3,981 +3,2812 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NTEi Store — Painel de Gestão</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<title>NTEi Store — Sistema Completo</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #111118;
-    --surface2: #1a1a24;
-    --border: #2a2a3a;
-    --accent: #6c63ff;
-    --accent2: #ff6b6b;
-    --gold: #ffd166;
-    --green: #06d6a0;
-    --text: #e8e8f0;
-    --muted: #888899;
-    --vitrine: #6c63ff;
-    --americana: #ff6b6b;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--bg); color: var(--text); font-family: 'Sora', sans-serif; min-height: 100vh; }
+:root {
+  --bg: #050508;
+  --surface: #0d0d14;
+  --surface2: #13131e;
+  --surface3: #1a1a28;
+  --border: #1e1e30;
+  --border2: #2a2a42;
+  --accent: #7c6eff;
+  --accent2: #ff5f7e;
+  --gold: #ffd166;
+  --green: #00e5a0;
+  --blue: #38bdf8;
+  --text: #e8e8f4;
+  --muted: #6b6b8a;
+  --muted2: #9898b8;
+  --vitrine: #7c6eff;
+  --americana: #ff5f7e;
+  --neon-glow: 0 0 20px #7c6eff44, 0 0 40px #7c6eff22;
+  --green-glow: 0 0 20px #00e5a044;
+  --red-glow: 0 0 20px #ff5f7e44;
+}
 
-  /* SIDEBAR */
-  .sidebar {
-    position: fixed; left: 0; top: 0; width: 240px; height: 100vh;
-    background: var(--surface); border-right: 1px solid var(--border);
-    display: flex; flex-direction: column; z-index: 100; padding: 24px 0;
-  }
-  .logo { padding: 0 24px 32px; }
-  .logo-mark { display: flex; align-items: center; gap: 10px; }
-  .logo-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 10px;
-    display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .logo-text { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
-  .logo-sub { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; font-family: 'DM Mono', monospace; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-  nav { flex: 1; padding: 0 12px; }
-  .nav-section { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase;
-    padding: 0 12px 8px; margin-top: 16px; font-family: 'DM Mono', monospace; }
-  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px;
-    cursor: pointer; color: var(--muted); font-size: 13px; font-weight: 500; transition: all 0.2s; margin-bottom: 2px; }
-  .nav-item:hover { background: var(--surface2); color: var(--text); }
-  .nav-item.active { background: var(--accent)20; color: var(--accent); }
-  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
-  .nav-badge { margin-left: auto; background: var(--accent2); color: white; font-size: 10px;
-    padding: 2px 6px; border-radius: 10px; font-family: 'DM Mono', monospace; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Sora', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-  .sidebar-footer { padding: 16px 24px; border-top: 1px solid var(--border); }
-  .user-card { display: flex; align-items: center; gap: 10px; }
-  .user-avatar { width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
-  .user-name { font-size: 13px; font-weight: 600; }
-  .user-role { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
+/* ============ APP SWITCHER ============ */
+#app-switcher {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--bg);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
 
-  /* MAIN */
-  .main { margin-left: 240px; min-height: 100vh; }
-  .topbar { background: var(--surface); border-bottom: 1px solid var(--border);
-    padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
-  .page-title { font-size: 20px; font-weight: 700; }
-  .topbar-actions { display: flex; gap: 10px; align-items: center; }
-  .btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-family: 'Sora', sans-serif;
-    font-size: 13px; font-weight: 600; transition: all 0.2s; }
-  .btn-primary { background: var(--accent); color: white; }
-  .btn-primary:hover { background: #7c73ff; transform: translateY(-1px); }
-  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
-  .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
-  .btn-danger { background: var(--accent2)20; color: var(--accent2); border: 1px solid var(--accent2)40; }
-  .btn-success { background: var(--green)20; color: var(--green); border: 1px solid var(--green)40; }
+.switcher-brand {
+  text-align: center;
+  margin-bottom: 10px;
+}
 
-  /* CONTENT */
-  .content { padding: 32px; }
-  
-  /* TABS */
-  .tab-bar { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 4px; margin-bottom: 28px; width: fit-content; }
-  .tab { padding: 8px 20px; border-radius: 7px; cursor: pointer; font-size: 13px; font-weight: 600;
-    color: var(--muted); transition: all 0.2s; }
-  .tab.active { background: var(--accent); color: white; }
+.switcher-brand .logo-big {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 
-  /* STATS */
-  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;
-    font-family: 'DM Mono', monospace; margin-bottom: 8px; }
-  .stat-value { font-size: 26px; font-weight: 800; letter-spacing: -1px; }
-  .stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
-  .stat-card.vitrine .stat-value { color: var(--vitrine); }
-  .stat-card.americana .stat-value { color: var(--americana); }
-  .stat-card.lucro .stat-value { color: var(--green); }
+.switcher-brand .logo-sub {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+  margin-top: 4px;
+}
 
-  /* TABLE */
-  .table-container { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 28px; }
-  .table-header { padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
-  .table-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-  .linha-badge { padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 1px; font-family: 'DM Mono', monospace; }
-  .linha-vitrine { background: var(--vitrine)20; color: var(--vitrine); border: 1px solid var(--vitrine)40; }
-  .linha-americana { background: var(--americana)20; color: var(--americana); border: 1px solid var(--americana)40; }
+.switcher-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 280px);
+  gap: 16px;
+}
 
-  table { width: 100%; border-collapse: collapse; }
-  thead { background: var(--surface2); }
-  th { padding: 10px 16px; text-align: left; font-size: 10px; font-weight: 600; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 1px; font-family: 'DM Mono', monospace; border-bottom: 1px solid var(--border); }
-  td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--border)80; }
-  tbody tr:hover { background: var(--surface2); }
-  tbody tr:last-child td { border-bottom: none; }
+.switcher-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 28px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
 
-  .cor-chips { display: flex; gap: 4px; flex-wrap: wrap; }
-  .cor-chip { padding: 2px 8px; background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 10px; font-size: 10px; color: var(--muted); }
-  .preco-custo { font-family: 'DM Mono', monospace; color: var(--muted); }
-  .preco-venda { font-family: 'DM Mono', monospace; color: var(--text); font-weight: 600; }
-  .lucro-val { font-family: 'DM Mono', monospace; color: var(--green); font-weight: 600; }
-  .garantia-chip { padding: 2px 10px; border-radius: 10px; font-size: 11px; font-family: 'DM Mono', monospace; }
-  .g-vitrine { background: var(--vitrine)15; color: var(--vitrine); }
-  .g-americana { background: var(--americana)15; color: var(--americana); }
+.switcher-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
 
-  .row-actions { display: flex; gap: 6px; }
-  .action-btn { padding: 4px 10px; border-radius: 6px; border: none; cursor: pointer; font-size: 11px;
-    font-family: 'Sora', sans-serif; font-weight: 600; transition: all 0.15s; }
-  .action-edit { background: var(--accent)20; color: var(--accent); }
-  .action-del { background: var(--accent2)20; color: var(--accent2); }
+.switcher-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: var(--neon-glow);
+}
 
-  /* MODAL */
-  .modal-overlay { position: fixed; inset: 0; background: #000000cc; z-index: 200;
-    display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
-    width: 560px; max-height: 90vh; overflow-y: auto; padding: 28px; }
-  .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-group.full { grid-column: 1/-1; }
-  label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase;
-    letter-spacing: 1px; font-family: 'DM Mono', monospace; }
-  input, select, textarea { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
-    color: var(--text); font-family: 'Sora', sans-serif; font-size: 13px; padding: 10px 14px;
-    outline: none; transition: border-color 0.2s; }
-  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
-  textarea { resize: vertical; min-height: 80px; }
-  select option { background: var(--surface); }
-  .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+.switcher-card:hover::before { opacity: 1; }
 
-  /* CHAT UPDATE */
-  .chat-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 28px; }
-  .chat-title { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-  .chat-body { padding: 16px 24px; min-height: 120px; max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-  .msg { padding: 8px 14px; border-radius: 10px; font-size: 13px; max-width: 80%; }
-  .msg-user { background: var(--accent)25; color: var(--text); align-self: flex-end; border-bottom-right-radius: 2px; }
-  .msg-sys { background: var(--surface2); color: var(--green); align-self: flex-start; border-bottom-left-radius: 2px; font-family: 'DM Mono', monospace; font-size: 12px; }
-  .chat-input-row { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
-  .chat-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
-    color: var(--text); font-family: 'Sora', sans-serif; font-size: 13px; padding: 10px 14px; outline: none; }
-  .chat-input:focus { border-color: var(--accent); }
-  .chat-send { padding: 10px 20px; background: var(--accent); color: white; border: none; border-radius: 10px;
-    cursor: pointer; font-family: 'Sora', sans-serif; font-weight: 600; font-size: 13px; transition: background 0.2s; }
-  .chat-send:hover { background: #7c73ff; }
+.switcher-card.app-admin:hover { border-color: var(--accent); box-shadow: 0 0 30px #7c6eff33; }
+.switcher-card.app-vendedor:hover { border-color: var(--gold); box-shadow: 0 0 30px #ffd16633; }
+.switcher-card.app-cliente:hover { border-color: var(--blue); box-shadow: 0 0 30px #38bdf833; }
+.switcher-card.app-motoboy:hover { border-color: var(--green); box-shadow: 0 0 30px #00e5a033; }
 
-  /* PEDIDOS */
-  .pedidos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
-  .pedido-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-  .pedido-id { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 6px; }
-  .pedido-cliente { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-  .pedido-produto { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
-  .pedido-status { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; }
-  .status-label { font-size: 12px; font-weight: 600; font-family: 'DM Mono', monospace; }
-  .status-preparando .status-dot { background: var(--gold); box-shadow: 0 0 8px var(--gold)80; }
-  .status-preparando .status-label { color: var(--gold); }
-  .status-enviado .status-dot { background: var(--accent); box-shadow: 0 0 8px var(--accent)80; }
-  .status-enviado .status-label { color: var(--accent); }
-  .status-entregue .status-dot { background: var(--green); box-shadow: 0 0 8px var(--green)80; }
-  .status-entregue .status-label { color: var(--green); }
-  .status-novo .status-dot { background: var(--muted); }
-  .status-novo .status-label { color: var(--muted); }
-  .pedido-valor { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 700; color: var(--green); }
-  .pedido-actions { display: flex; gap: 6px; margin-top: 12px; }
-  .status-btn { flex: 1; padding: 7px; border-radius: 8px; border: none; cursor: pointer;
-    font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 600; transition: all 0.2s; }
-  .btn-avancar { background: var(--accent)20; color: var(--accent); }
-  .btn-avancar:hover { background: var(--accent); color: white; }
+.switcher-icon {
+  font-size: 36px;
+  margin-bottom: 14px;
+  display: block;
+}
 
-  /* PAGE visibility */
-  .page { display: none; }
-  .page.active { display: block; }
+.switcher-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
 
-  /* TOAST */
-  .toast { position: fixed; bottom: 30px; right: 30px; background: var(--green); color: #000;
-    padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 13px; z-index: 999;
-    transform: translateY(80px); opacity: 0; transition: all 0.3s; }
-  .toast.show { transform: translateY(0); opacity: 1; }
+.switcher-desc {
+  font-size: 12px;
+  color: var(--muted2);
+  line-height: 1.5;
+}
 
-  /* SEARCH */
-  .search-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-  .search-input { background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-    color: var(--text); font-family: 'Sora', sans-serif; font-size: 13px; padding: 9px 14px; outline: none;
-    width: 260px; transition: border-color 0.2s; }
-  .search-input:focus { border-color: var(--accent); }
-  .filter-select { background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-    color: var(--text); font-family: 'Sora', sans-serif; font-size: 13px; padding: 9px 14px; outline: none; cursor: pointer; }
+.switcher-tag {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
 
-  .empty-state { text-align: center; padding: 40px; color: var(--muted); font-size: 14px; }
-  
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
-  .live-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50; animation: pulse 2s infinite; border-radius: 50%; }
+.tag-admin { background: #7c6eff22; color: var(--accent); border: 1px solid #7c6eff44; }
+.tag-vendedor { background: #ffd16622; color: var(--gold); border: 1px solid #ffd16644; }
+.tag-cliente { background: #38bdf822; color: var(--blue); border: 1px solid #38bdf844; }
+.tag-motoboy { background: #00e5a022; color: var(--green); border: 1px solid #00e5a044; }
+
+/* ============ GLOBAL NAV BAR ============ */
+.global-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 52px;
+  background: #050508ee;
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 500;
+}
+
+.global-logo { font-size: 15px; font-weight: 800; letter-spacing: -0.5px; }
+.global-logo span { color: var(--accent); }
+
+.global-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--muted2);
+  transition: all 0.2s;
+}
+.global-back:hover { border-color: var(--accent); color: var(--text); }
+
+.global-app-label {
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* ============ APPS CONTAINER ============ */
+.app { display: none; padding-top: 52px; min-height: 100vh; }
+.app.active { display: block; }
+
+/* ============ COMMON COMPONENTS ============ */
+.btn {
+  padding: 9px 18px;
+  border-radius: 9px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 4px 15px #7c6eff33;
+}
+.btn-primary:hover { background: #9585ff; transform: translateY(-1px); box-shadow: 0 6px 20px #7c6eff44; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted2);
+  border: 1px solid var(--border2);
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--text); }
+
+.btn-danger { background: #ff5f7e22; color: var(--accent2); border: 1px solid #ff5f7e44; }
+.btn-danger:hover { background: var(--accent2); color: white; }
+
+.btn-success { background: #00e5a022; color: var(--green); border: 1px solid #00e5a044; }
+.btn-success:hover { background: var(--green); color: #050508; }
+
+.btn-gold { background: #ffd16622; color: var(--gold); border: 1px solid #ffd16644; }
+
+input, select, textarea {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 9px;
+  color: var(--text);
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px #7c6eff18;
+}
+select option { background: var(--surface2); }
+textarea { resize: vertical; min-height: 80px; }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+label {
+  font-size: 10px;
+  color: var(--muted2);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-family: 'DM Mono', monospace;
+}
+
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: #000000cc;
+  backdrop-filter: blur(4px);
+  z-index: 800;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  width: 560px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 30px;
+  transform: translateY(20px);
+  transition: transform 0.25s;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-grid .full { grid-column: 1 / -1; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted2);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 16px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.badge-vitrine { background: #7c6eff22; color: var(--vitrine); border: 1px solid #7c6eff44; }
+.badge-americana { background: #ff5f7e22; color: var(--americana); border: 1px solid #ff5f7e44; }
+
+.toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 9999;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: 320px;
+  box-shadow: 0 10px 40px #00000066;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: #00e5a066; color: var(--green); }
+.toast.error { border-color: #ff5f7e66; color: var(--accent2); }
+
+/* ============ TABLE ============ */
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.table-head-bar {
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+table { width: 100%; border-collapse: collapse; }
+thead { background: var(--surface2); }
+th {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'DM Mono', monospace;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td {
+  padding: 11px 16px;
+  font-size: 13px;
+  border-bottom: 1px solid #1e1e3044;
+}
+tbody tr { transition: background 0.15s; }
+tbody tr:hover { background: var(--surface2); }
+tbody tr:last-child td { border-bottom: none; }
+
+.mono { font-family: 'DM Mono', monospace; }
+.green { color: var(--green); }
+.gold { color: var(--gold); }
+.red { color: var(--accent2); }
+.blue { color: var(--blue); }
+.muted { color: var(--muted2); }
+
+/* ============ SCROLLBAR ============ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+
+/* =============================================
+   APP 1 — ADMINISTRADOR
+   ============================================= */
+#app-admin .sidebar {
+  position: fixed;
+  left: 0; top: 52px;
+  width: 220px;
+  height: calc(100vh - 52px);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 10px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+#app-admin .main-content {
+  margin-left: 220px;
+  padding: 28px 32px;
+}
+
+.nav-section-label {
+  font-size: 9px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: 'DM Mono', monospace;
+  padding: 12px 12px 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 12px;
+  border-radius: 9px;
+  cursor: pointer;
+  color: var(--muted2);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+  margin-bottom: 2px;
+  position: relative;
+}
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: #7c6eff18; color: var(--accent); }
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20%; bottom: 20%;
+  width: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+.nav-item .n-icon { font-size: 15px; width: 18px; text-align: center; }
+.nav-count {
+  margin-left: auto;
+  background: var(--accent2);
+  color: white;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-family: 'DM Mono', monospace;
+  min-width: 18px;
+  text-align: center;
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+/* DASHBOARD */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  opacity: 0.06;
+}
+
+.stat-card.s-purple::after { background: var(--accent); }
+.stat-card.s-green::after { background: var(--green); }
+.stat-card.s-red::after { background: var(--accent2); }
+.stat-card.s-gold::after { background: var(--gold); }
+
+.stat-icon { font-size: 24px; margin-bottom: 10px; display: block; }
+.stat-label { font-size: 10px; color: var(--muted2); text-transform: uppercase; letter-spacing: 1.5px; font-family: 'DM Mono', monospace; margin-bottom: 6px; }
+.stat-value { font-size: 24px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; }
+.stat-sub { font-size: 11px; color: var(--muted); }
+
+.s-purple .stat-value { color: var(--accent); }
+.s-green .stat-value { color: var(--green); }
+.s-red .stat-value { color: var(--accent2); }
+.s-gold .stat-value { color: var(--gold); }
+
+/* ESTOQUE TABLE */
+.cor-chips { display: flex; gap: 4px; flex-wrap: wrap; max-width: 220px; }
+.cor-chip {
+  padding: 2px 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  font-size: 10px;
+  color: var(--muted2);
+  font-family: 'DM Mono', monospace;
+  white-space: nowrap;
+}
+.cor-chip.zero { opacity: 0.4; text-decoration: line-through; }
+.cor-chip.ok { border-color: #00e5a033; color: var(--green); }
+
+.row-acts { display: flex; gap: 5px; }
+.act-btn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.act-edit { background: #7c6eff22; color: var(--accent); }
+.act-edit:hover { background: var(--accent); color: white; }
+.act-del { background: #ff5f7e22; color: var(--accent2); }
+.act-del:hover { background: var(--accent2); color: white; }
+
+/* PEDIDOS PAGE */
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.kanban-col {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.kanban-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kanban-title { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+.kanban-count {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  padding: 1px 7px;
+  color: var(--muted2);
+}
+
+.kanban-cards { padding: 12px; display: flex; flex-direction: column; gap: 10px; min-height: 100px; }
+
+.pedido-card {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 11px;
+  padding: 14px;
+  transition: all 0.2s;
+}
+.pedido-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+
+.p-id { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-bottom: 5px; }
+.p-cliente { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.p-produto { font-size: 11px; color: var(--muted2); margin-bottom: 8px; }
+.p-valor { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 700; color: var(--green); margin-bottom: 8px; }
+.p-pgto { font-size: 10px; color: var(--muted); margin-bottom: 10px; font-family: 'DM Mono', monospace; }
+.p-end { font-size: 10px; color: var(--muted2); margin-bottom: 10px; }
+.p-acts { display: flex; gap: 6px; }
+
+/* CHAT BOT */
+.chat-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  max-width: 800px;
+}
+
+.chat-topbar {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bot-avatar {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.chat-messages {
+  padding: 20px;
+  min-height: 300px;
+  max-height: 420px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-msg {
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  max-width: 85%;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.msg-user {
+  background: #7c6eff22;
+  border: 1px solid #7c6eff33;
+  color: var(--text);
+  align-self: flex-end;
+  border-bottom-right-radius: 3px;
+}
+
+.msg-bot {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--green);
+  align-self: flex-start;
+  border-bottom-left-radius: 3px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+}
+
+.msg-error {
+  color: var(--accent2);
+  border-color: #ff5f7e33;
+  background: #ff5f7e11;
+}
+
+.chat-input-area {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.margem-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.margem-row label { white-space: nowrap; margin-bottom: 0; color: var(--muted2); }
+
+.chat-textarea {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  padding: 12px 14px;
+  outline: none;
+  resize: vertical;
+  min-height: 90px;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.chat-textarea:focus { border-color: var(--accent); }
+
+.chat-send-row { display: flex; gap: 10px; align-items: center; }
+
+/* RELATORIO */
+.rel-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+/* =============================================
+   APP 2 — VENDEDOR
+   ============================================= */
+#app-vendedor .v-main { padding: 28px 32px; max-width: 1200px; margin: 0 auto; }
+
+.v-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.v-search { display: flex; gap: 10px; align-items: center; }
+
+.search-inp {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 9px;
+  color: var(--text);
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  padding: 9px 14px;
+  outline: none;
+  width: 240px;
+  transition: border-color 0.2s;
+}
+.search-inp:focus { border-color: var(--accent); }
+
+.estoque-table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.linha-divider {
+  padding: 10px 18px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* VENDA MODAL */
+.v-form { display: flex; flex-direction: column; gap: 14px; }
+
+/* =============================================
+   APP 3 — VITRINE CLIENTE
+   ============================================= */
+#app-cliente {
+  background: var(--bg);
+}
+
+.cliente-hero {
+  padding: 60px 32px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cliente-hero::before {
+  content: '';
+  position: absolute;
+  top: -100px; left: 50%;
+  transform: translateX(-50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, #7c6eff11 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 14px;
+}
+
+.hero-title {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  margin-bottom: 14px;
+}
+
+.hero-title span {
+  background: linear-gradient(135deg, var(--accent), #b388ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub { font-size: 15px; color: var(--muted2); max-width: 480px; margin: 0 auto 28px; }
+
+.hero-badges { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.hero-badge {
+  padding: 6px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  font-size: 11px;
+  color: var(--muted2);
+}
+
+.client-filters {
+  padding: 0 32px 20px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 7px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-btn:hover, .filter-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: #7c6eff14;
+}
+
+.produto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  padding: 0 32px 60px;
+}
+
+.produto-card-client {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.produto-card-client:hover {
+  transform: translateY(-6px);
+  border-color: var(--accent);
+  box-shadow: 0 20px 60px #7c6eff22;
+}
+
+.produto-card-client.esgotado { opacity: 0.5; }
+
+.product-img-wrap {
+  background: linear-gradient(135deg, #0d0d1a, #131320);
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.product-img-wrap img {
+  width: 130px;
+  height: 160px;
+  object-fit: contain;
+  transition: transform 0.4s ease;
+  filter: drop-shadow(0 10px 30px #7c6eff33);
+}
+
+.produto-card-client:hover .product-img-wrap img {
+  transform: scale(1.08) translateY(-4px);
+}
+
+.product-linha-tag {
+  position: absolute;
+  top: 12px; right: 12px;
+}
+
+.product-info {
+  padding: 18px;
+}
+
+.p-model { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+.p-cap { font-size: 12px; color: var(--muted2); margin-bottom: 10px; }
+
+.color-dots { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.color-dot {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.color-dot.selected { border-color: white; transform: scale(1.2); }
+.color-dot.zero { opacity: 0.3; cursor: not-allowed; }
+
+.p-price { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; margin-bottom: 12px; font-family: 'DM Mono', monospace; }
+
+.buy-btn {
+  width: 100%;
+  padding: 11px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.2s;
+  background: var(--accent);
+  color: white;
+}
+.buy-btn:hover { background: #9585ff; transform: translateY(-1px); }
+.buy-btn.esgotado-btn { background: var(--surface2); color: var(--muted); cursor: not-allowed; border: 1px solid var(--border2); }
+
+/* CHECKOUT MODAL */
+.checkout-modal { width: 520px; }
+
+.checkout-produto-info {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.checkout-img {
+  width: 70px; height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px #7c6eff44);
+}
+
+.pix-box {
+  background: var(--surface2);
+  border: 1px solid #00e5a033;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  margin: 16px 0;
+}
+
+.pix-key {
+  font-family: 'DM Mono', monospace;
+  font-size: 16px;
+  color: var(--green);
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.pix-label { font-size: 11px; color: var(--muted2); margin-top: 4px; }
+
+.pgto-tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+.pgto-tab {
+  flex: 1;
+  padding: 9px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 9px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted2);
+  transition: all 0.2s;
+}
+.pgto-tab.active { border-color: var(--accent); color: var(--accent); background: #7c6eff14; }
+
+.pgto-content { display: none; }
+.pgto-content.active { display: block; }
+
+/* =============================================
+   APP 4 — MOTOBOY
+   ============================================= */
+#app-motoboy {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+}
+
+.moto-header {
+  text-align: center;
+  padding: 20px 0 28px;
+}
+
+.moto-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.moto-sub { font-size: 12px; color: var(--muted2); font-family: 'DM Mono', monospace; }
+
+.corrida-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+}
+
+.corrida-card:hover { border-color: var(--accent); }
+
+.corrida-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+
+.corrida-id { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+.corrida-cliente { font-size: 16px; font-weight: 700; margin-top: 3px; }
+
+.status-pill {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'DM Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+.status-novo { background: #6b6b8a22; color: var(--muted2); border: 1px solid #6b6b8a44; }
+.status-preparando { background: #ffd16622; color: var(--gold); border: 1px solid #ffd16644; }
+.status-saiu_entrega { background: #38bdf822; color: var(--blue); border: 1px solid #38bdf844; }
+.status-entregue { background: #00e5a022; color: var(--green); border: 1px solid #00e5a044; }
+
+.corrida-produto { font-size: 13px; color: var(--muted2); margin-bottom: 6px; }
+.corrida-endereco { font-size: 12px; color: var(--text); display: flex; align-items: flex-start; gap: 6px; margin-bottom: 12px; }
+
+.corrida-valor { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 700; color: var(--green); margin-bottom: 14px; }
+
+.corrida-btns { display: flex; flex-direction: column; gap: 8px; }
+
+.gps-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Sora', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 15px #38bdf833;
+}
+.gps-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px #38bdf844; }
+
+.entregar-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--green), #00c48c);
+  color: #050508;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Sora', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 15px #00e5a033;
+}
+.entregar-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px #00e5a055; }
+
+.moto-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+}
+
+.moto-empty-icon { font-size: 48px; display: block; margin-bottom: 14px; }
+
+/* Avancar status btn */
+.avancar-btn {
+  width: 100%;
+  padding: 10px;
+  background: #7c6eff22;
+  color: var(--accent);
+  border: 1px solid #7c6eff33;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Sora', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.avancar-btn:hover { background: var(--accent); color: white; }
+
+/* ============ CORES EDITOR IN MODAL ============ */
+.cores-editor { display: flex; flex-direction: column; gap: 8px; }
+.cor-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 30px;
+  gap: 8px;
+  align-items: center;
+}
+.cor-row input { padding: 7px 10px; font-size: 12px; }
+.remove-cor {
+  background: #ff5f7e22;
+  color: var(--accent2);
+  border: 1px solid #ff5f7e44;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 6px 8px;
+  font-size: 14px;
+  transition: all 0.15s;
+}
+.remove-cor:hover { background: var(--accent2); color: white; }
+
+.add-cor-btn {
+  background: transparent;
+  border: 1px dashed var(--border2);
+  color: var(--muted2);
+  border-radius: 8px;
+  padding: 7px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: 'Sora', sans-serif;
+  width: 100%;
+  text-align: center;
+  transition: all 0.2s;
+}
+.add-cor-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ============ ANIMATIONS ============ */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.fade-in { animation: fadeIn 0.4s ease forwards; }
+
+.live-dot {
+  width: 7px; height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  display: inline-block;
+}
+
+/* ============ SEARCH BAR ============ */
+.topbar-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.strip-title { font-size: 20px; font-weight: 700; }
+.strip-right { display: flex; gap: 10px; align-items: center; }
+
+/* ===== CONFIRM MODAL ===== */
+.confirm-modal { width: 380px; text-align: center; }
+.confirm-icon { font-size: 40px; margin-bottom: 12px; display: block; }
+.confirm-text { font-size: 15px; margin-bottom: 6px; }
+.confirm-sub { font-size: 13px; color: var(--muted2); margin-bottom: 24px; }
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+  #app-admin .sidebar { display: none; }
+  #app-admin .main-content { margin-left: 0; padding: 16px; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .kanban { grid-template-columns: 1fr; }
+  .produto-grid { grid-template-columns: repeat(2, 1fr); padding: 0 16px 40px; }
+  .switcher-grid { grid-template-columns: 1fr; width: 300px; }
+  #app-motoboy { max-width: 100%; }
+  .hero-title { font-size: 28px; }
+}
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <div class="logo">
-    <div class="logo-mark">
-      <div class="logo-icon">📱</div>
-      <div>
-        <div class="logo-text">NTEi Store</div>
-        <div class="logo-sub">Gestão</div>
-      </div>
-    </div>
+<!-- ===================== APP SWITCHER ===================== -->
+<div id="app-switcher">
+  <div class="switcher-brand">
+    <div class="logo-big">NTEi Store</div>
+    <div class="logo-sub">Sistema de Gestão • Selecione seu Painel</div>
   </div>
-  <nav>
-    <div class="nav-section">Principal</div>
-    <div class="nav-item active" onclick="showPage('estoque')">
-      <span class="icon">📦</span> Estoque
+  <div class="switcher-grid">
+    <div class="switcher-card app-admin" onclick="openApp('admin')">
+      <span class="switcher-icon">🛡️</span>
+      <div class="switcher-title">Painel Administrador</div>
+      <div class="switcher-desc">Estoque, financeiro, robô de lote, pedidos e relatórios completos.</div>
+      <span class="switcher-tag tag-admin">Master</span>
     </div>
-    <div class="nav-item" onclick="showPage('pedidos')">
-      <span class="icon">🛒</span> Pedidos
-      <span class="nav-badge" id="pedidos-badge">0</span>
+    <div class="switcher-card app-vendedor" onclick="openApp('vendedor')">
+      <span class="switcher-icon">💼</span>
+      <div class="switcher-title">Dashboard Vendedor</div>
+      <div class="switcher-desc">Visualiza estoque e registra vendas. Sem acesso a custos ou margens.</div>
+      <span class="switcher-tag tag-vendedor">Balcão</span>
     </div>
-    <div class="nav-item" onclick="showPage('entregador')">
-      <span class="icon">🚚</span> Entregador
+    <div class="switcher-card app-cliente" onclick="openApp('cliente')">
+      <span class="switcher-icon">🛍️</span>
+      <div class="switcher-title">Vitrine do Cliente</div>
+      <div class="switcher-desc">E-commerce imersivo com fotos, seletor de cor e checkout via PIX.</div>
+      <span class="switcher-tag tag-cliente">Público</span>
     </div>
-    <div class="nav-section">Gerenciamento</div>
-    <div class="nav-item" onclick="showPage('produtos')">
-      <span class="icon">✏️</span> Cadastro
-    </div>
-    <div class="nav-item" onclick="showPage('chat')">
-      <span class="icon">💬</span> Atualizar via Chat
-    </div>
-    <div class="nav-item" onclick="showPage('relatorio')">
-      <span class="icon">📊</span> Relatório
-    </div>
-  </nav>
-  <div class="sidebar-footer">
-    <div class="user-card">
-      <div class="user-avatar">A</div>
-      <div>
-        <div class="user-name">Admin</div>
-        <div class="user-role">PROPRIETÁRIO</div>
-      </div>
+    <div class="switcher-card app-motoboy" onclick="openApp('motoboy')">
+      <span class="switcher-icon">🏍️</span>
+      <div class="switcher-title">Central do Entregador</div>
+      <div class="switcher-desc">Lista de corridas, GPS integrado e confirmação de entrega com baixa automática.</div>
+      <span class="switcher-tag tag-motoboy">Logística</span>
     </div>
   </div>
 </div>
 
-<!-- MAIN -->
-<div class="main">
-  <div class="topbar">
-    <div class="page-title" id="page-title">📦 Estoque</div>
-    <div class="topbar-actions">
-      <div class="live-dot"></div>
-      <span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;">LIVE</span>
-      <button class="btn btn-primary" onclick="openModal()">+ Cadastrar Produto</button>
+<!-- ===================== GLOBAL BAR ===================== -->
+<div class="global-bar" id="global-bar" style="display:none">
+  <div class="global-logo">NTEi <span>Store</span></div>
+  <span class="global-app-label" id="global-app-label">—</span>
+  <div class="global-back" onclick="goBack()">← Trocar App</div>
+</div>
+
+<!-- ===================== APP 1: ADMINISTRADOR ===================== -->
+<div class="app" id="app-admin">
+  <div class="sidebar">
+    <div class="nav-section-label">Principal</div>
+    <div class="nav-item active" onclick="adminNav('dashboard', this)">
+      <span class="n-icon">📊</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="adminNav('estoque', this)">
+      <span class="n-icon">📦</span> Estoque
+    </div>
+    <div class="nav-item" onclick="adminNav('pedidos', this)">
+      <span class="n-icon">🛒</span> Pedidos
+      <span class="nav-count" id="admin-badge-pedidos" style="display:none">0</span>
+    </div>
+    <div class="nav-section-label">Ferramentas</div>
+    <div class="nav-item" onclick="adminNav('chat', this)">
+      <span class="n-icon">🤖</span> Robô de Lote
+    </div>
+    <div class="nav-item" onclick="adminNav('relatorio', this)">
+      <span class="n-icon">📈</span> Relatório
     </div>
   </div>
 
-  <div class="content">
-
-    <!-- PAGE: ESTOQUE -->
-    <div class="page active" id="page-estoque">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Total Produtos</div>
-          <div class="stat-value" id="stat-total">31</div>
-          <div class="stat-sub">SKUs ativos</div>
-        </div>
-        <div class="stat-card vitrine">
-          <div class="stat-label">Linha Vitrine</div>
-          <div class="stat-value" id="stat-vitrine">14</div>
-          <div class="stat-sub">Bateria 100% • 40 dias</div>
-        </div>
-        <div class="stat-card americana">
-          <div class="stat-label">Linha Americana</div>
-          <div class="stat-value" id="stat-americana">17</div>
-          <div class="stat-sub">Garantia 6 meses</div>
-        </div>
-        <div class="stat-card lucro">
-          <div class="stat-label">Lucro Estimado Total</div>
-          <div class="stat-value" id="stat-lucro">R$ 0</div>
-          <div class="stat-sub">Soma de todos SKUs</div>
+  <div class="main-content">
+    <!-- DASHBOARD -->
+    <div class="page active" id="adm-dashboard">
+      <div class="topbar-strip">
+        <div class="strip-title">📊 Dashboard Financeiro</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="live-dot"></span>
+          <span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">LIVE</span>
         </div>
       </div>
 
-      <div class="search-bar">
-        <input class="search-input" type="text" placeholder="🔍 Buscar modelo..." oninput="filterTable(this.value)">
-        <select class="filter-select" onchange="filterLinha(this.value)">
-          <option value="">Todas as linhas</option>
-          <option value="Vitrine">Vitrine</option>
-          <option value="Americana">Americana</option>
-        </select>
-      </div>
-
-      <div class="table-container" id="table-vitrine">
-        <div class="table-header">
-          <div class="table-title">
-            <span class="linha-badge linha-vitrine">VITRINE</span>
-            Bateria 100% · Garantia 40 Dias com Selo
-          </div>
+      <div class="stats-row">
+        <div class="stat-card s-purple">
+          <span class="stat-icon">📦</span>
+          <div class="stat-label">Capital em Estoque</div>
+          <div class="stat-value" id="d-capital">R$ 0</div>
+          <div class="stat-sub">Soma de todos os custos</div>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Modelo</th>
-              <th>Cap</th>
-              <th>Cores</th>
-              <th>Custo (Fornec.)</th>
-              <th>Venda (NTEi)</th>
-              <th>Lucro</th>
-              <th>Garantia</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="tbody-vitrine"></tbody>
-        </table>
-      </div>
-
-      <div class="table-container" id="table-americana">
-        <div class="table-header">
-          <div class="table-title">
-            <span class="linha-badge linha-americana">🇺🇸 AMERICANA</span>
-            iPhone Americano · Somente o Aparelho · Garantia 6 Meses
-          </div>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Modelo</th>
-              <th>Cap</th>
-              <th>Cores</th>
-              <th>Custo (Fornec.)</th>
-              <th>Venda (NTEi)</th>
-              <th>Lucro</th>
-              <th>Garantia</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="tbody-americana"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- PAGE: PEDIDOS -->
-    <div class="page" id="page-pedidos">
-      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
-        <div class="stat-card"><div class="stat-label">Novos</div><div class="stat-value" id="cnt-novo" style="color:var(--muted)">0</div></div>
-        <div class="stat-card"><div class="stat-label">Preparando</div><div class="stat-value" id="cnt-prep" style="color:var(--gold)">0</div></div>
-        <div class="stat-card"><div class="stat-label">Enviados</div><div class="stat-value" id="cnt-env" style="color:var(--accent)">0</div></div>
-        <div class="stat-card lucro"><div class="stat-label">Entregues</div><div class="stat-value" id="cnt-ent">0</div></div>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-        <div style="font-size:14px;font-weight:700">Pedidos Ativos</div>
-        <button class="btn btn-primary" onclick="openNovoPedido()">+ Novo Pedido</button>
-      </div>
-      <div class="pedidos-grid" id="pedidos-container"></div>
-    </div>
-
-    <!-- PAGE: ENTREGADOR -->
-    <div class="page" id="page-entregador">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:32px;margin-bottom:24px;text-align:center">
-        <div style="font-size:48px;margin-bottom:16px">🔐</div>
-        <div style="font-size:18px;font-weight:700;margin-bottom:8px">Autenticação de Entregador</div>
-        <div style="color:var(--muted);font-size:13px;margin-bottom:24px">Entre com o código de acesso do entregador</div>
-        <div style="display:flex;gap:10px;justify-content:center;max-width:320px;margin:0 auto">
-          <input type="password" id="entregador-code" placeholder="Código de acesso" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Sora',sans-serif;font-size:14px;padding:12px 16px;outline:none">
-          <button class="btn btn-primary" onclick="authEntregador()">Entrar</button>
-        </div>
-      </div>
-      <div id="entregador-panel" style="display:none">
-        <div style="background:var(--green)15;border:1px solid var(--green)40;border-radius:12px;padding:16px 24px;margin-bottom:20px;display:flex;align-items:center;gap:10px">
-          <span style="font-size:20px">✅</span>
-          <div><div style="font-weight:700;color:var(--green)">Entregador autenticado</div>
-          <div style="font-size:12px;color:var(--muted)">Acesso liberado — Preparação e autenticação de pedidos</div></div>
-        </div>
-        <div style="font-size:14px;font-weight:700;margin-bottom:16px">Pedidos para Preparar</div>
-        <div id="entregador-pedidos"></div>
-      </div>
-    </div>
-
-    <!-- PAGE: PRODUTOS -->
-    <div class="page" id="page-produtos">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:24px">
-        <div style="font-size:16px;font-weight:700;margin-bottom:20px">📱 Cadastrar Novo Produto</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Modelo</label>
-            <input type="text" id="cad-modelo" placeholder="ex: iPhone 15 Pro">
-          </div>
-          <div class="form-group">
-            <label>Capacidade</label>
-            <input type="text" id="cad-cap" placeholder="ex: 128GB">
-          </div>
-          <div class="form-group">
-            <label>Cores (separado por vírgula)</label>
-            <input type="text" id="cad-cores" placeholder="ex: Preto, Branco, Azul">
-          </div>
-          <div class="form-group">
-            <label>Linha</label>
-            <select id="cad-linha">
-              <option value="vitrine">Vitrine</option>
-              <option value="americana">Americana</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Preço Fornecedor (R$)</label>
-            <input type="number" id="cad-custo" placeholder="ex: 3000">
-          </div>
-          <div class="form-group">
-            <label>Preço de Venda (R$)</label>
-            <input type="number" id="cad-venda" placeholder="ex: 3650">
-          </div>
-          <div class="form-group">
-            <label>Garantia</label>
-            <input type="text" id="cad-garantia" placeholder="ex: 40 Dias ou 6 Meses">
-          </div>
-          <div class="form-group">
-            <label>Foto URL (opcional)</label>
-            <input type="text" id="cad-foto" placeholder="https://...">
-          </div>
-        </div>
-        <div style="margin-top:20px;display:flex;gap:10px">
-          <button class="btn btn-primary" onclick="cadastrarProduto()">✅ Cadastrar Produto</button>
-          <button class="btn btn-ghost" onclick="limparForm()">Limpar</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- PAGE: CHAT -->
-    <div class="page" id="page-chat">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px">
-        <div style="font-size:14px;font-weight:700;margin-bottom:8px">💬 Atualizar Estoque via Mensagem</div>
-        <div style="color:var(--muted);font-size:13px;line-height:1.6">
-          <strong style="color:var(--text)">Como usar:</strong> Digite uma mensagem com o produto, preço e cor. O sistema interpreta e atualiza automaticamente.<br>
-          <span style="font-family:'DM Mono',monospace;color:var(--accent)">ex: iPhone 14 128GB Preto Vitrine R$ 1950 venda R$ 2350</span>
-        </div>
-      </div>
-      <div class="chat-section">
-        <div class="chat-title">💬 Terminal de Atualização <div class="live-dot" style="margin-left:8px"></div></div>
-        <div class="chat-body" id="chat-body">
-          <div class="msg msg-sys">✅ Sistema pronto. Envie uma mensagem para atualizar o estoque.</div>
-        </div>
-        <div class="chat-input-row">
-          <input class="chat-input" id="chat-input" type="text" placeholder="ex: iPhone 13 128GB Verde Vitrine R$ 1750 venda R$ 2140" onkeydown="if(event.key==='Enter')sendChat()">
-          <button class="chat-send" onclick="sendChat()">Enviar →</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- PAGE: RELATORIO -->
-    <div class="page" id="page-relatorio">
-      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:28px">
-        <div class="stat-card">
-          <div class="stat-label">Valor Total Estoque (Venda)</div>
-          <div class="stat-value" id="rel-total-venda" style="color:var(--accent)">R$ 0</div>
-          <div class="stat-sub">Soma preços de venda</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Custo Total Estoque</div>
-          <div class="stat-value" id="rel-total-custo" style="color:var(--americana)">R$ 0</div>
-          <div class="stat-sub">Soma custos fornecedor</div>
-        </div>
-        <div class="stat-card lucro">
+        <div class="stat-card s-green">
+          <span class="stat-icon">💰</span>
           <div class="stat-label">Lucro Potencial</div>
-          <div class="stat-value" id="rel-lucro-total">R$ 0</div>
-          <div class="stat-sub">18,41% margem</div>
+          <div class="stat-value" id="d-potencial">R$ 0</div>
+          <div class="stat-sub">Se vender tudo</div>
+        </div>
+        <div class="stat-card s-gold">
+          <span class="stat-icon">✅</span>
+          <div class="stat-label">Lucro Realizado</div>
+          <div class="stat-value" id="d-realizado">R$ 0</div>
+          <div class="stat-sub">Pedidos entregues</div>
+        </div>
+        <div class="stat-card s-red">
+          <span class="stat-icon">🛒</span>
+          <div class="stat-label">Pedidos Ativos</div>
+          <div class="stat-value" id="d-pedidos-ativos">0</div>
+          <div class="stat-sub">Em andamento</div>
         </div>
       </div>
-      <div class="table-container">
-        <div class="table-header"><div class="table-title">📊 Relatório Completo de Produtos</div></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="card">
+          <div class="section-title">Resumo por Linha</div>
+          <div id="d-linha-resumo">—</div>
+        </div>
+        <div class="card">
+          <div class="section-title">Últimos Pedidos</div>
+          <div id="d-ultimos-pedidos" style="display:flex;flex-direction:column;gap:8px">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ESTOQUE -->
+    <div class="page" id="adm-estoque">
+      <div class="topbar-strip">
+        <div class="strip-title">📦 Gerenciador de Estoque</div>
+        <div class="strip-right">
+          <input class="search-inp" type="text" placeholder="🔍 Buscar..." oninput="adminFiltrar(this.value)" style="width:200px">
+          <select class="search-inp" onchange="adminFiltrarLinha(this.value)" style="width:140px">
+            <option value="">Todas as Linhas</option>
+            <option value="vitrine">Vitrine</option>
+            <option value="americana">Americana</option>
+          </select>
+          <button class="btn btn-primary" onclick="abrirModalProduto()">+ Novo Produto</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-head-bar">
+          <span style="font-size:13px;font-weight:700">📋 Todos os SKUs</span>
+          <span id="estoque-count" style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted2)">0 produtos</span>
+        </div>
         <table>
           <thead>
-            <tr><th>Linha</th><th>Modelo</th><th>Cap.</th><th>Custo</th><th>Venda</th><th>Lucro</th><th>Margem</th></tr>
+            <tr>
+              <th>Linha</th>
+              <th>Modelo</th>
+              <th>Cap.</th>
+              <th>Cores / Qtd</th>
+              <th>Custo</th>
+              <th>Venda</th>
+              <th>Lucro</th>
+              <th>Garantia</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-estoque"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PEDIDOS -->
+    <div class="page" id="adm-pedidos">
+      <div class="topbar-strip">
+        <div class="strip-title">🛒 Pedidos</div>
+        <button class="btn btn-primary" onclick="abrirModalNovoPedido()">+ Novo Pedido</button>
+      </div>
+      <div class="kanban" id="kanban-board">
+        <div class="kanban-col">
+          <div class="kanban-header">
+            <div class="kanban-title">⏳ Novo <span class="kanban-count" id="k-count-novo">0</span></div>
+          </div>
+          <div class="kanban-cards" id="k-novo"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-header">
+            <div class="kanban-title">🔧 Preparando <span class="kanban-count" id="k-count-preparando">0</span></div>
+          </div>
+          <div class="kanban-cards" id="k-preparando"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-header">
+            <div class="kanban-title">🚚 Na Entrega <span class="kanban-count" id="k-count-saiu_entrega">0</span></div>
+          </div>
+          <div class="kanban-cards" id="k-saiu_entrega"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-header">
+            <div class="kanban-title">✅ Entregue <span class="kanban-count" id="k-count-entregue">0</span></div>
+          </div>
+          <div class="kanban-cards" id="k-entregue"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT ROBÔ -->
+    <div class="page" id="adm-chat">
+      <div class="topbar-strip">
+        <div class="strip-title">🤖 Robô Atualizador de Lote</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 340px;gap:20px">
+        <div class="chat-container">
+          <div class="chat-topbar">
+            <div class="bot-avatar">🤖</div>
+            <div>
+              <div style="font-size:14px;font-weight:700">Assistente de Estoque</div>
+              <div style="font-size:11px;color:var(--muted2);font-family:'DM Mono',monospace">Cola a lista do atacadista → eu processo automaticamente</div>
+            </div>
+          </div>
+          <div class="chat-messages" id="chat-msgs">
+            <div class="chat-msg msg-bot">👋 Olá! Cole aqui a lista completa do seu fornecedor. Eu reconheço automaticamente:\n✅ iPhone VITRINE (bateria 100%, garantia 40 dias)\n✅ iPhone AMERICANO (garantia 6 meses)\n✅ Emojis de cores (🤍💙🖤🧡💜💚🩷🔴)\n✅ Quantidades por cor\n✅ Preço de custo → calculo venda com sua margem\n\nDefina a margem de lucro ao lado e cole a lista!</div>
+          </div>
+          <div class="chat-input-area">
+            <div class="margem-row">
+              <label style="white-space:nowrap">💵 Margem R$:</label>
+              <input type="number" id="chat-margem" value="300" placeholder="300" style="width:110px;flex-shrink:0">
+              <span style="font-size:12px;color:var(--muted2);font-family:'DM Mono',monospace">por unidade</span>
+            </div>
+            <textarea class="chat-textarea" id="chat-input" placeholder="Cole aqui a lista do fornecedor..."></textarea>
+            <div class="chat-send-row">
+              <button class="btn btn-primary" onclick="processarLote()" style="flex:1">🚀 Processar Lista Completa</button>
+              <button class="btn btn-ghost" onclick="limparChat()">🗑️ Limpar</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <div class="section-title">📖 Guia de Uso</div>
+            <div style="font-size:12px;color:var(--muted2);line-height:1.7;font-family:'DM Mono',monospace">
+              1. Defina a margem de lucro (R$) que você quer por aparelho<br><br>
+              2. Cole a lista completa do atacadista exatamente como recebeu — emojis, asteriscos, tudo<br><br>
+              3. Clique em <strong style="color:var(--accent)">Processar Lista</strong><br><br>
+              4. O robô identifica automaticamente VITRINE vs AMERICANO, extrai modelos, capacidades, cores e preços<br><br>
+              ✅ Se o produto já existe: atualiza preço<br>
+              🆕 Se for novo: cadastra automaticamente
+            </div>
+          </div>
+          <div class="card">
+            <div class="section-title">🎯 Resultado do Último Lote</div>
+            <div id="lote-resultado" style="font-size:12px;color:var(--muted2);font-family:'DM Mono',monospace">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RELATÓRIO -->
+    <div class="page" id="adm-relatorio">
+      <div class="topbar-strip">
+        <div class="strip-title">📈 Relatório Completo</div>
+        <button class="btn btn-ghost" onclick="renderRelatorio()">🔄 Atualizar</button>
+      </div>
+
+      <div class="rel-row">
+        <div class="stat-card s-purple">
+          <div class="stat-label">Faturamento Potencial</div>
+          <div class="stat-value mono" id="rel-faturamento">R$ 0</div>
+        </div>
+        <div class="stat-card s-red">
+          <div class="stat-label">Capital Investido</div>
+          <div class="stat-value mono" id="rel-custo">R$ 0</div>
+        </div>
+        <div class="stat-card s-green">
+          <div class="stat-label">Lucro Potencial Total</div>
+          <div class="stat-value mono" id="rel-lucro">R$ 0</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-head-bar">
+          <span style="font-size:13px;font-weight:700">Breakdown por SKU</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Linha</th><th>Modelo</th><th>Capacidade</th>
+              <th>Custo</th><th>Venda</th><th>Lucro</th><th>Margem %</th><th>Total Uni</th>
+            </tr>
           </thead>
           <tbody id="tbody-relatorio"></tbody>
         </table>
       </div>
     </div>
+  </div><!-- /main-content -->
+</div><!-- /app-admin -->
 
-  </div><!-- /content -->
-</div><!-- /main -->
 
-<!-- MODAL CADASTRO -->
-<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+<!-- ===================== APP 2: VENDEDOR ===================== -->
+<div class="app" id="app-vendedor">
+  <div class="v-main">
+    <div class="v-header">
+      <div>
+        <div style="font-size:22px;font-weight:800">💼 Painel do Vendedor</div>
+        <div style="font-size:12px;color:var(--muted2);margin-top:3px">Visualize o estoque e registre vendas — Custo e Margem ocultos</div>
+      </div>
+      <div class="v-search">
+        <input class="search-inp" type="text" placeholder="🔍 Buscar modelo..." oninput="vendedorFiltrar(this.value)" style="width:220px">
+        <button class="btn btn-primary" onclick="abrirVendaModal()">+ Registrar Venda</button>
+      </div>
+    </div>
+
+    <div id="vendedor-tabelas"></div>
+  </div>
+</div>
+
+<!-- ===================== APP 3: CLIENTE ===================== -->
+<div class="app" id="app-cliente">
+  <div class="cliente-hero">
+    <div class="hero-eyebrow">NTEi Store</div>
+    <div class="hero-title">iPhones <span>Premium</span><br>Direto pra Você</div>
+    <div class="hero-sub">Linha Vitrine e Americana. Garantia real. Entregamos em todo o Brasil.</div>
+    <div class="hero-badges">
+      <span class="hero-badge">🔋 Bateria 100%</span>
+      <span class="hero-badge">✅ Garantia Inclusa</span>
+      <span class="hero-badge">📦 Entrega Rápida</span>
+      <span class="hero-badge">💳 PIX ou Cartão</span>
+    </div>
+  </div>
+
+  <div class="client-filters" id="client-filters">
+    <button class="filter-btn active" onclick="clienteFiltrar('', this)">Todos</button>
+    <button class="filter-btn" onclick="clienteFiltrar('vitrine', this)">📱 Vitrine</button>
+    <button class="filter-btn" onclick="clienteFiltrar('americana', this)">🍎 Americana</button>
+  </div>
+
+  <div class="produto-grid" id="produto-grid-cliente"></div>
+</div>
+
+<!-- ===================== APP 4: MOTOBOY ===================== -->
+<div class="app" id="app-motoboy">
+  <div class="moto-header">
+    <div class="moto-title">🏍️ Central do Entregador</div>
+    <div class="moto-sub">Pedidos ativos • Clique para navegar e confirmar entrega</div>
+  </div>
+  <div id="motoboy-lista"></div>
+</div>
+
+
+<!-- ============ MODAL: PRODUTO (Admin) ============ -->
+<div class="modal-overlay" id="modal-produto">
   <div class="modal">
-    <div class="modal-title">📱 Cadastrar Produto</div>
+    <div class="modal-title" id="modal-produto-title">📱 Novo Produto</div>
     <div class="form-grid">
       <div class="form-group">
         <label>Modelo</label>
-        <input type="text" id="m-modelo" placeholder="iPhone 15 Pro">
+        <input type="text" id="mp-modelo" placeholder="iPhone 15 Pro Max">
       </div>
       <div class="form-group">
         <label>Capacidade</label>
-        <input type="text" id="m-cap" placeholder="128GB">
-      </div>
-      <div class="form-group full">
-        <label>Cores (separado por vírgula)</label>
-        <input type="text" id="m-cores" placeholder="Preto, Branco, Azul">
+        <input type="text" id="mp-cap" placeholder="256GB">
       </div>
       <div class="form-group">
         <label>Linha</label>
-        <select id="m-linha"><option value="vitrine">Vitrine</option><option value="americana">Americana</option></select>
-      </div>
-      <div class="form-group">
-        <label>Garantia</label>
-        <input type="text" id="m-garantia" placeholder="40 Dias">
-      </div>
-      <div class="form-group">
-        <label>Preço Fornecedor (R$)</label>
-        <input type="number" id="m-custo" placeholder="3000">
-      </div>
-      <div class="form-group">
-        <label>Preço de Venda (R$)</label>
-        <input type="number" id="m-venda" placeholder="3650">
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveModal()">✅ Salvar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL NOVO PEDIDO -->
-<div class="modal-overlay" id="pedido-modal" onclick="if(event.target===this)document.getElementById('pedido-modal').classList.remove('open')">
-  <div class="modal">
-    <div class="modal-title">🛒 Novo Pedido</div>
-    <div class="form-grid">
-      <div class="form-group full">
-        <label>Nome do Cliente</label>
-        <input type="text" id="p-cliente" placeholder="Nome completo">
-      </div>
-      <div class="form-group full">
-        <label>Produto</label>
-        <select id="p-produto" style="width:100%"></select>
-      </div>
-      <div class="form-group full">
-        <label>Endereço de Entrega</label>
-        <input type="text" id="p-endereco" placeholder="Rua, número, bairro, cidade">
-      </div>
-      <div class="form-group">
-        <label>Pagamento</label>
-        <select id="p-pgto">
-          <option>PIX</option>
-          <option>Crédito</option>
-          <option>Débito</option>
-          <option>Celular como Entrada</option>
-          <option>Dinheiro</option>
+        <select id="mp-linha" onchange="atualizarGarantiaAuto()">
+          <option value="vitrine">Vitrine (40 dias)</option>
+          <option value="americana">Americana (6 meses)</option>
         </select>
       </div>
       <div class="form-group">
-        <label>Cor escolhida</label>
-        <input type="text" id="p-cor" placeholder="ex: Preto">
+        <label>Garantia</label>
+        <input type="text" id="mp-garantia" placeholder="40 Dias">
+      </div>
+      <div class="form-group">
+        <label>Preço de Custo (R$)</label>
+        <input type="number" id="mp-custo" placeholder="2500" oninput="calcLucroModal()">
+      </div>
+      <div class="form-group">
+        <label>Preço de Venda (R$)</label>
+        <input type="number" id="mp-venda" placeholder="2900" oninput="calcLucroModal()">
+      </div>
+      <div class="form-group full">
+        <label>Lucro por Unidade</label>
+        <div id="mp-lucro-preview" style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--green);padding:8px 0">R$ —</div>
+      </div>
+      <div class="form-group full">
+        <label>Cores e Quantidades</label>
+        <div class="cores-editor" id="cores-editor"></div>
+        <button class="add-cor-btn" onclick="adicionarCorRow()">+ Adicionar Cor</button>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="document.getElementById('pedido-modal').classList.remove('open')">Cancelar</button>
-      <button class="btn btn-primary" onclick="criarPedido()">✅ Criar Pedido</button>
+      <button class="btn btn-ghost" onclick="fecharModal('modal-produto')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarProduto()">💾 Salvar Produto</button>
     </div>
   </div>
 </div>
 
+<!-- ============ MODAL: NOVO PEDIDO (Admin + Vendedor) ============ -->
+<div class="modal-overlay" id="modal-pedido">
+  <div class="modal">
+    <div class="modal-title">🛒 Registrar Nova Venda</div>
+    <div class="v-form">
+      <div class="form-group">
+        <label>Nome do Cliente</label>
+        <input type="text" id="ped-cliente" placeholder="João da Silva">
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Produto</label>
+          <select id="ped-produto" onchange="atualizarCoresPedido()"></select>
+        </div>
+        <div class="form-group">
+          <label>Cor Escolhida</label>
+          <select id="ped-cor"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Endereço de Entrega</label>
+        <input type="text" id="ped-endereco" placeholder="Rua, Número, Bairro, Cidade - Estado">
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Forma de Pagamento</label>
+          <select id="ped-pgto">
+            <option value="PIX">PIX</option>
+            <option value="Cartão">Cartão</option>
+            <option value="Dinheiro">Dinheiro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Valor Total</label>
+          <div id="ped-valor-preview" style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--green);padding:10px 0">R$ —</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModal('modal-pedido')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarPedido()">✅ Criar Pedido</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: CHECKOUT CLIENTE ============ -->
+<div class="modal-overlay" id="modal-checkout">
+  <div class="modal checkout-modal">
+    <div class="modal-title">💳 Finalizar Compra</div>
+
+    <div class="checkout-produto-info" id="checkout-info">
+      <img class="checkout-img" id="checkout-img" src="" alt="">
+      <div>
+        <div id="checkout-modelo" style="font-size:15px;font-weight:700;margin-bottom:4px">—</div>
+        <div id="checkout-cor-sel" style="font-size:12px;color:var(--muted2);margin-bottom:8px">—</div>
+        <div id="checkout-preco" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:800;color:var(--green)">—</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div class="form-group" style="margin-bottom:12px">
+        <label>Seu Nome</label>
+        <input type="text" id="co-nome" placeholder="Nome completo">
+      </div>
+      <div class="form-group">
+        <label>Endereço de Entrega</label>
+        <input type="text" id="co-endereco" placeholder="Rua, Número, Bairro, Cidade - Estado">
+      </div>
+    </div>
+
+    <div class="pgto-tabs">
+      <div class="pgto-tab active" onclick="selecionarPgto('pix', this)">💚 PIX</div>
+      <div class="pgto-tab" onclick="selecionarPgto('cartao', this)">💳 Cartão</div>
+      <div class="pgto-tab" onclick="selecionarPgto('dinheiro', this)">💵 Dinheiro</div>
+    </div>
+
+    <div id="pgto-pix" class="pgto-content active">
+      <div class="pix-box">
+        <div style="font-size:11px;color:var(--muted2);margin-bottom:8px">Chave PIX — CPF do Proprietário</div>
+        <div class="pix-key">493.046.558-38</div>
+        <div class="pix-label">Copie a chave e pague pelo seu banco</div>
+        <button onclick="copiarPix()" class="btn btn-success" style="margin-top:12px;width:100%">📋 Copiar Chave PIX</button>
+      </div>
+      <div style="font-size:12px;color:var(--muted2);text-align:center;margin-top:10px">Após o pagamento, clique em Confirmar</div>
+    </div>
+
+    <div id="pgto-cartao" class="pgto-content">
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:10px">
+        <div class="form-group">
+          <label>Número do Cartão</label>
+          <input type="text" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatCard(this)">
+        </div>
+        <div class="form-grid" style="grid-template-columns:1fr 1fr">
+          <div class="form-group">
+            <label>Validade</label>
+            <input type="text" placeholder="MM/AA" maxlength="5">
+          </div>
+          <div class="form-group">
+            <label>CVV</label>
+            <input type="text" placeholder="123" maxlength="3">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="pgto-dinheiro" class="pgto-content">
+      <div class="pix-box" style="border-color:#ffd16633">
+        <div style="font-size:13px;color:var(--gold)">💵 Pagamento em Dinheiro</div>
+        <div style="font-size:12px;color:var(--muted2);margin-top:8px">Nosso entregador recebe o valor exato na entrega. Tenha o troco separado.</div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModal('modal-checkout')">Cancelar</button>
+      <button class="btn btn-primary" style="flex:1" onclick="confirmarCompraCliente()">🛍️ Confirmar Pedido</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TOAST ============ -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ==================== DATA ====================
-let estoque = {
+// =============================================
+//  BANCO DE DADOS — localStorage unificado
+// =============================================
+
+const DB_ESTOQUE = 'ntei_estoque_v2';
+const DB_PEDIDOS = 'ntei_pedidos_v2';
+
+function dbGet(key) {
+  try { return JSON.parse(localStorage.getItem(key)) || null; } catch { return null; }
+}
+
+function dbSet(key, val) {
+  localStorage.setItem(key, JSON.stringify(val));
+  // Dispara evento para sync entre abas
+  window.dispatchEvent(new StorageEvent('storage', { key }));
+}
+
+// ============ DADOS INICIAIS ============
+const ESTOQUE_INICIAL = {
   vitrine: [
-    { id:'v1', modelo:"iPhone 16", capacidade:"128GB", cores:["Azul"], precoFornecedor:3500, precoVenda:4290, lucro:790, garantia:"40 Dias" },
-    { id:'v2', modelo:"iPhone 15 Pro Max", capacidade:"256GB", cores:["Blue"], precoFornecedor:3840, precoVenda:4650, lucro:810, garantia:"40 Dias" },
-    { id:'v3', modelo:"iPhone 15 Pro", capacidade:"128GB", cores:["White","Blue","Black"], precoFornecedor:3030, precoVenda:3690, lucro:660, garantia:"40 Dias" },
-    { id:'v4', modelo:"iPhone 15", capacidade:"128GB", cores:["Azul"], precoFornecedor:2480, precoVenda:3020, lucro:540, garantia:"40 Dias" },
-    { id:'v5', modelo:"iPhone 14 Pro Max", capacidade:"128GB", cores:["Gold","White","Purple","Black"], precoFornecedor:2950, precoVenda:3590, lucro:640, garantia:"40 Dias" },
-    { id:'v6', modelo:"iPhone 14 Pro", capacidade:"128GB", cores:["Gold","White","Purple","Black"], precoFornecedor:2500, precoVenda:3050, lucro:550, garantia:"40 Dias" },
-    { id:'v7', modelo:"iPhone 14", capacidade:"128GB", cores:["White","Blue","Black"], precoFornecedor:1850, precoVenda:2260, lucro:410, garantia:"40 Dias" },
-    { id:'v8', modelo:"iPhone 13 Pro Max", capacidade:"128GB", cores:["Gold","White","Blue","Black"], precoFornecedor:2450, precoVenda:2990, lucro:540, garantia:"40 Dias" },
-    { id:'v9', modelo:"iPhone 13", capacidade:"128GB", cores:["White","Blue","Black","Pink","Green"], precoFornecedor:1750, precoVenda:2140, lucro:390, garantia:"40 Dias" },
-    { id:'v10', modelo:"iPhone 12 Pro Max", capacidade:"256GB", cores:["Gold","White","Blue","Black"], precoFornecedor:2050, precoVenda:2500, lucro:450, garantia:"40 Dias" },
-    { id:'v11', modelo:"iPhone 12 Pro Max", capacidade:"128GB", cores:["Roxo","White","Blue","Black"], precoFornecedor:1900, precoVenda:2320, lucro:420, garantia:"40 Dias" },
-    { id:'v12', modelo:"iPhone 12 Pro", capacidade:"256GB", cores:["Gold","White","Blue","Black"], precoFornecedor:1770, precoVenda:2160, lucro:390, garantia:"40 Dias" },
-    { id:'v13', modelo:"iPhone 12 Pro", capacidade:"128GB", cores:["Gold","White","Blue","Black"], precoFornecedor:1680, precoVenda:2050, lucro:370, garantia:"40 Dias" },
-    { id:'v14', modelo:"iPhone 12", capacidade:"128GB", cores:["Roxo","White","Blue","Black"], precoFornecedor:1370, precoVenda:1670, lucro:300, garantia:"40 Dias" },
+    { id:'v1', modelo:'iPhone 16', capacidade:'128GB', precoFornecedor:3200, precoVenda:3500, lucro:300, garantia:'40 Dias',
+      cores:[{nome:'Azul',qtd:2},{nome:'Preto',qtd:1}] },
+    { id:'v2', modelo:'iPhone 15 Pro Max', capacidade:'256GB', precoFornecedor:3540, precoVenda:3840, lucro:300, garantia:'40 Dias',
+      cores:[{nome:'Blue',qtd:1}] },
+    { id:'v3', modelo:'iPhone 15 Pro', capacidade:'128GB', precoFornecedor:2730, precoVenda:3030, lucro:300, garantia:'40 Dias',
+      cores:[{nome:'White',qtd:2},{nome:'Blue',qtd:1},{nome:'Black',qtd:2}] },
+    { id:'v4', modelo:'iPhone 15', capacidade:'128GB', precoFornecedor:2180, precoVenda:2480, lucro:300, garantia:'40 Dias',
+      cores:[{nome:'Azul',qtd:1}] },
+    { id:'v5', modelo:'iPhone 14 Pro Max', capacidade:'128GB', precoFornecedor:2650, precoVenda:2950, lucro:300, garantia:'40 Dias',
+      cores:[{nome:'Gold',qtd:1},{nome:'White',qtd:1},{nome:'Purple',qtd:1},{nome:'Black',qtd:2}] },
+    { id:'v6', modelo:'iPhone 14 Pro', capacidade:'128GB', precoFornecedor:2200, precoVenda:2500, lucro:300, garantia:'40 Dias',
+      cores:[{nome:'Gold',qtd:1},{nome:'White',qtd:1},{nome:'Purple',qtd:0},{nome:'Black',qtd:1}] },
+    { id:'v7', modelo:'iPhone 14', capacidade:'128GB', precoFornecedor:1550, precoVenda:1850, lucro:300, garantia:'40 Dias',
+      cores:[{nome:'White',qtd:2},{nome:'Blue',qtd:1},{nome:'Black',qtd:1}] },
+    { id:'v8', modelo:'iPhone 13 Pro Max', capacidade:'128GB', precoFornecedor:2150, precoVenda:2450, lucro:300, garantia:'40 Dias',
+      cores:[{nome:'Gold',qtd:1},{nome:'White',qtd:1},{nome:'Blue',qtd:0},{nome:'Black',qtd:2}] },
+    { id:'v9', modelo:'iPhone 13', capacidade:'128GB', precoFornecedor:1450, precoVenda:1750, lucro:300, garantia:'40 Dias',
+      cores:[{nome:'White',qtd:1},{nome:'Blue',qtd:1},{nome:'Black',qtd:2},{nome:'Pink',qtd:1},{nome:'Green',qtd:0}] },
+    { id:'v10', modelo:'iPhone 12 Pro Max', capacidade:'256GB', precoFornecedor:1750, precoVenda:2050, lucro:300, garantia:'40 Dias',
+      cores:[{nome:'Gold',qtd:1},{nome:'White',qtd:1},{nome:'Blue',qtd:1},{nome:'Black',qtd:1}] },
+    { id:'v11', modelo:'iPhone 12 Pro Max', capacidade:'128GB', precoFornecedor:1600, precoVenda:1900, lucro:300, garantia:'40 Dias',
+      cores:[{nome:'Gold',qtd:0},{nome:'White',qtd:2},{nome:'Blue',qtd:1},{nome:'Black',qtd:1}] },
+    { id:'v12', modelo:'iPhone 12 Pro', capacidade:'256GB', precoFornecedor:1470, precoVenda:1770, lucro:300, garantia:'40 Dias',
+      cores:[{nome:'Gold',qtd:1},{nome:'White',qtd:1},{nome:'Blue',qtd:0},{nome:'Black',qtd:1}] },
+    { id:'v13', modelo:'iPhone 12 Pro', capacidade:'128GB', precoFornecedor:1380, precoVenda:1680, lucro:300, garantia:'40 Dias',
+      cores:[{nome:'Gold',qtd:1},{nome:'White',qtd:2},{nome:'Blue',qtd:1},{nome:'Black',qtd:1}] },
+    { id:'v14', modelo:'iPhone 12', capacidade:'128GB', precoFornecedor:1070, precoVenda:1370, lucro:300, garantia:'40 Dias',
+      cores:[{nome:'Roxo',qtd:1},{nome:'White',qtd:2},{nome:'Blue',qtd:1},{nome:'Black',qtd:1}] }
   ],
   americana: [
-    { id:'a1', modelo:"iPhone 16 Pro Max", capacidade:"256GB", cores:["Preto","Desert","Natural","Branco"], precoFornecedor:4800, precoVenda:5850, lucro:1050, garantia:"6 Meses" },
-    { id:'a2', modelo:"iPhone 16 Pro", capacidade:"128GB", cores:["Desert","Preto"], precoFornecedor:4150, precoVenda:5050, lucro:900, garantia:"6 Meses" },
-    { id:'a3', modelo:"iPhone 15 Pro Max", capacidade:"256GB", cores:["Azul","Preto"], precoFornecedor:3800, precoVenda:4630, lucro:830, garantia:"6 Meses" },
-    { id:'a4', modelo:"iPhone 15 Pro", capacidade:"128GB", cores:["Natural","Azul","Branco"], precoFornecedor:3100, precoVenda:3780, lucro:680, garantia:"6 Meses" },
-    { id:'a5', modelo:"iPhone 15", capacidade:"128GB", cores:["Preto","Rosa"], precoFornecedor:3800, precoVenda:4630, lucro:830, garantia:"6 Meses" },
-    { id:'a6', modelo:"iPhone 14 Pro Max", capacidade:"256GB", cores:["Roxo","Preto"], precoFornecedor:3100, precoVenda:3780, lucro:680, garantia:"6 Meses" },
-    { id:'a7', modelo:"iPhone 14 Pro", capacidade:"256GB", cores:["Roxo","Preto"], precoFornecedor:2700, precoVenda:3290, lucro:590, garantia:"6 Meses" },
-    { id:'a8', modelo:"iPhone 13 Pro Max", capacidade:"256GB", cores:["Azul","Verde","Preto"], precoFornecedor:2700, precoVenda:3290, lucro:590, garantia:"6 Meses" },
-    { id:'a9', modelo:"iPhone 13 Pro Max", capacidade:"128GB", cores:["Verde","Azul"], precoFornecedor:2600, precoVenda:3170, lucro:570, garantia:"6 Meses" },
-    { id:'a10', modelo:"iPhone 13 Pro", capacidade:"256GB", cores:["Preto","Rosa"], precoFornecedor:2150, precoVenda:2620, lucro:470, garantia:"6 Meses" },
-    { id:'a11', modelo:"iPhone 13", capacidade:"256GB", cores:["Azul","Verde","Preto","Vermelho"], precoFornecedor:1950, precoVenda:2380, lucro:430, garantia:"6 Meses" },
-    { id:'a12', modelo:"iPhone 13", capacidade:"128GB", cores:["Azul","Verde","Preto","Rosa"], precoFornecedor:1700, precoVenda:2070, lucro:370, garantia:"6 Meses" },
-    { id:'a13', modelo:"iPhone 12 Pro Max", capacidade:"256GB", cores:["Branco","Azul"], precoFornecedor:2250, precoVenda:2740, lucro:490, garantia:"6 Meses" },
-    { id:'a14', modelo:"iPhone 12 Pro Max", capacidade:"128GB", cores:["Azul","Preto","Gold"], precoFornecedor:2150, precoVenda:2620, lucro:470, garantia:"6 Meses" },
-    { id:'a15', modelo:"iPhone 12 Pro", capacidade:"128GB", cores:["Branco","Preto"], precoFornecedor:1700, precoVenda:2070, lucro:370, garantia:"6 Meses" },
-    { id:'a16', modelo:"iPhone 11", capacidade:"128GB", cores:["Roxo","Preto"], precoFornecedor:1350, precoVenda:1650, lucro:300, garantia:"6 Meses" },
+    { id:'a1', modelo:'iPhone 11', capacidade:'128GB', precoFornecedor:1050, precoVenda:1350, lucro:300, garantia:'6 Meses',
+      cores:[{nome:'Roxo',qtd:2}] },
+    { id:'a2', modelo:'iPhone 12 Pro Max', capacidade:'128GB', precoFornecedor:1850, precoVenda:2150, lucro:300, garantia:'6 Meses',
+      cores:[{nome:'Azul',qtd:1}] },
+    { id:'a3', modelo:'iPhone 12 Pro Max', capacidade:'256GB', precoFornecedor:1950, precoVenda:2250, lucro:300, garantia:'6 Meses',
+      cores:[{nome:'Preto',qtd:1}] },
+    { id:'a4', modelo:'iPhone 13', capacidade:'128GB', precoFornecedor:1400, precoVenda:1700, lucro:300, garantia:'6 Meses',
+      cores:[{nome:'Verde',qtd:1},{nome:'Azul',qtd:2},{nome:'Vermelho',qtd:1},{nome:'Preto',qtd:2},{nome:'Rosa',qtd:1}] },
+    { id:'a5', modelo:'iPhone 13', capacidade:'256GB', precoFornecedor:1650, precoVenda:1950, lucro:300, garantia:'6 Meses',
+      cores:[{nome:'Azul',qtd:1},{nome:'Preto',qtd:1}] },
+    { id:'a6', modelo:'iPhone 13 Pro', capacidade:'128GB', precoFornecedor:1850, precoVenda:2150, lucro:300, garantia:'6 Meses',
+      cores:[{nome:'Azul',qtd:1},{nome:'Verde',qtd:1},{nome:'Preto',qtd:2}] },
+    { id:'a7', modelo:'iPhone 13 Pro', capacidade:'256GB', precoFornecedor:1900, precoVenda:2200, lucro:300, garantia:'6 Meses',
+      cores:[{nome:'Preto',qtd:1}] },
+    { id:'a8', modelo:'iPhone 14 Pro Max', capacidade:'128GB', precoFornecedor:2700, precoVenda:3000, lucro:300, garantia:'6 Meses',
+      cores:[{nome:'Roxo',qtd:1}] },
+    { id:'a9', modelo:'iPhone 15', capacidade:'128GB', precoFornecedor:2300, precoVenda:2600, lucro:300, garantia:'6 Meses',
+      cores:[{nome:'Preto',qtd:1},{nome:'Rosa',qtd:1}] },
+    { id:'a10', modelo:'iPhone 16 Pro', capacidade:'128GB', precoFornecedor:3850, precoVenda:4150, lucro:300, garantia:'6 Meses',
+      cores:[{nome:'Preto',qtd:1},{nome:'Desert',qtd:1}] },
+    { id:'a11', modelo:'iPhone 16 Pro Max', capacidade:'256GB', precoFornecedor:4600, precoVenda:4900, lucro:300, garantia:'6 Meses',
+      cores:[{nome:'Preto',qtd:1},{nome:'Desert',qtd:2},{nome:'Natural',qtd:1},{nome:'Branco',qtd:1}] }
   ]
 };
 
-let pedidos = [];
-let pedidoCounter = 1000;
-let filterText = '';
-let filterLinha = '';
+// Init DB
+function initDB() {
+  if (!dbGet(DB_ESTOQUE)) dbSet(DB_ESTOQUE, ESTOQUE_INICIAL);
+  if (!dbGet(DB_PEDIDOS)) dbSet(DB_PEDIDOS, []);
+}
 
-const STATUS_LIST = ['novo','preparando','enviado','a caminho','destino','entregue'];
-const STATUS_LABELS = {
-  novo: '🔵 Novo Pedido',
-  preparando: '🟡 Preparando',
-  enviado: '📦 Enviado',
-  'a caminho': '🚚 A Caminho',
-  destino: '📍 No Destino',
-  entregue: '✅ Entregue'
+function getEstoque() { return dbGet(DB_ESTOQUE) || ESTOQUE_INICIAL; }
+function getPedidos() { return dbGet(DB_PEDIDOS) || []; }
+function setEstoque(e) { dbSet(DB_ESTOQUE, e); }
+function setPedidos(p) { dbSet(DB_PEDIDOS, p); }
+
+// Escuta mudanças em outras abas
+window.addEventListener('storage', (e) => {
+  if (e.key === DB_ESTOQUE || e.key === DB_PEDIDOS) {
+    renderAtual();
+  }
+});
+
+// =============================================
+//  FOTOS — Mapeamento por modelo
+// =============================================
+const FOTOS = {
+  'iphone 16 pro max': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-16-pro-finish-select-202409-6-9inch-deserttitanium?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1725382499985',
+  'iphone 16 pro': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-16-pro-finish-select-202409-6-3inch-blacktitanium?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1725382499985',
+  'iphone 16': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-16-finish-select-202409-6-1inch-ultramarine?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1725384721853',
+  'iphone 15 pro max': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-7inch-blacktitanium?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1693009278345',
+  'iphone 15 pro': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-1inch-blacktitanium?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1693009278345',
+  'iphone 15': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-finish-select-202309-6-1inch-pink?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1693009221614',
+  'iphone 14 pro max': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-14-pro-finish-select-202209-6-7inch-deeppurple?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1660753619946',
+  'iphone 14 pro': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-14-pro-finish-select-202209-6-1inch-deeppurple?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1660753619946',
+  'iphone 14': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-14-finish-select-202209-6-1inch-midnight?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1660753619946',
+  'iphone 13 pro max': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-13-pro-family-hero?wid=940&hei=1112&fmt=jpeg&qlt=90&.v=1631210070000',
+  'iphone 13 pro': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-13-pro-family-hero?wid=940&hei=1112&fmt=jpeg&qlt=90&.v=1631210070000',
+  'iphone 13': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-13-finish-select-202207-6-1inch-starlight?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1656107802985',
+  'iphone 12 pro max': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-12-pro-max-gold-select-2020?wid=940&hei=1112&fmt=jpeg&qlt=90&.v=1604021663000',
+  'iphone 12 pro': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-12-pro-blue-select-2020?wid=940&hei=1112&fmt=jpeg&qlt=90&.v=1604021663000',
+  'iphone 12': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-12-purple-select-2021?wid=940&hei=1112&fmt=jpeg&qlt=90&.v=1617130317000',
+  'iphone 11': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-11-yellow-select-2019?wid=940&hei=1112&fmt=jpeg&qlt=90&.v=1567022107000'
 };
 
-function fmt(v){return'R$ '+Number(v).toLocaleString('pt-BR');}
-
-// ==================== RENDER ====================
-function renderTables(){
-  let allProds = [...estoque.vitrine.map(p=>({...p,linha:'vitrine'})), ...estoque.americana.map(p=>({...p,linha:'americana'}))];
-  let filtered = allProds.filter(p=>{
-    let matchText = filterText===''||(p.modelo+p.capacidade).toLowerCase().includes(filterText.toLowerCase());
-    let matchLinha = filterLinha===''||p.linha===filterLinha.toLowerCase();
-    return matchText&&matchLinha;
-  });
-
-  ['vitrine','americana'].forEach(linha=>{
-    let tbody = document.getElementById('tbody-'+linha);
-    let prods = filtered.filter(p=>p.linha===linha);
-    if(!prods.length){tbody.innerHTML='<tr><td colspan="8" class="empty-state">Nenhum produto encontrado</td></tr>';return;}
-    tbody.innerHTML = prods.map(p=>`
-      <tr>
-        <td><strong>${p.modelo}</strong></td>
-        <td style="font-family:'DM Mono',monospace;font-size:12px">${p.capacidade}</td>
-        <td><div class="cor-chips">${p.cores.map(c=>`<span class="cor-chip">${c}</span>`).join('')}</div></td>
-        <td class="preco-custo">${fmt(p.precoFornecedor)}</td>
-        <td class="preco-venda">${fmt(p.precoVenda)}</td>
-        <td class="lucro-val">+${fmt(p.lucro)}</td>
-        <td><span class="garantia-chip g-${linha}">${p.garantia}</span></td>
-        <td>
-          <div class="row-actions">
-            <button class="action-btn action-edit" onclick="editProduct('${p.id}','${linha}')">✏️</button>
-            <button class="action-btn action-del" onclick="deleteProduct('${p.id}','${linha}')">🗑️</button>
-          </div>
-        </td>
-      </tr>`).join('');
-  });
-
-  // stats
-  let tV = estoque.vitrine.length, tA = estoque.americana.length;
-  let lucroTotal = [...estoque.vitrine,...estoque.americana].reduce((s,p)=>s+p.lucro,0);
-  document.getElementById('stat-total').textContent = tV+tA;
-  document.getElementById('stat-vitrine').textContent = tV;
-  document.getElementById('stat-americana').textContent = tA;
-  document.getElementById('stat-lucro').textContent = fmt(lucroTotal);
-
-  renderRelatorio();
-  updatePedidoBadge();
+function getFoto(modelo) {
+  const key = modelo.toLowerCase().trim();
+  for (const [k, v] of Object.entries(FOTOS)) {
+    if (key.includes(k.replace('iphone ','').trim()) || k.includes(key.replace('iphone ','').trim())) {
+      return v;
+    }
+  }
+  // Fallback: tenta match parcial
+  for (const [k, v] of Object.entries(FOTOS)) {
+    const parts = k.split(' ');
+    if (parts.every(p => key.includes(p))) return v;
+  }
+  return 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-1inch-blacktitanium?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1693009278345';
 }
 
-function renderRelatorio(){
-  let all = [...estoque.vitrine.map(p=>({...p,linha:'Vitrine'})),...estoque.americana.map(p=>({...p,linha:'Americana 🇺🇸'}))];
-  let totalVenda=0,totalCusto=0,totalLucro=0;
-  document.getElementById('tbody-relatorio').innerHTML = all.map(p=>{
-    totalVenda+=p.precoVenda; totalCusto+=p.precoFornecedor; totalLucro+=p.lucro;
-    let margem = ((p.lucro/p.precoVenda)*100).toFixed(1);
-    return`<tr>
-      <td><span class="linha-badge ${p.linha.includes('Vitrine')?'linha-vitrine':'linha-americana'}">${p.linha}</span></td>
-      <td>${p.modelo}</td>
-      <td style="font-family:'DM Mono',monospace;font-size:12px">${p.capacidade}</td>
-      <td class="preco-custo">${fmt(p.precoFornecedor)}</td>
-      <td class="preco-venda">${fmt(p.precoVenda)}</td>
-      <td class="lucro-val">+${fmt(p.lucro)}</td>
-      <td style="color:var(--green);font-family:'DM Mono',monospace">${margem}%</td>
+// =============================================
+//  FORMATAÇÃO
+// =============================================
+function fmt(v) {
+  return 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits:0});
+}
+
+function totalCores(prod) {
+  if (!prod.cores) return 0;
+  return prod.cores.reduce((s, c) => s + (c.qtd || 0), 0);
+}
+
+// =============================================
+//  NAVEGAÇÃO ENTRE APPS
+// =============================================
+let currentApp = null;
+
+function openApp(appName) {
+  document.getElementById('app-switcher').style.display = 'none';
+  document.getElementById('global-bar').style.display = 'flex';
+
+  const labels = {
+    admin: '🛡️ Administrador',
+    vendedor: '💼 Vendedor',
+    cliente: '🛍️ Vitrine',
+    motoboy: '🏍️ Entregador'
+  };
+  document.getElementById('global-app-label').textContent = labels[appName] || appName;
+
+  document.querySelectorAll('.app').forEach(a => a.classList.remove('active'));
+  document.getElementById('app-' + appName).classList.add('active');
+  currentApp = appName;
+
+  // Render o app
+  if (appName === 'admin') renderAdmin();
+  if (appName === 'vendedor') renderVendedor();
+  if (appName === 'cliente') renderCliente();
+  if (appName === 'motoboy') renderMotoboy();
+}
+
+function goBack() {
+  document.querySelectorAll('.app').forEach(a => a.classList.remove('active'));
+  document.getElementById('app-switcher').style.display = 'flex';
+  document.getElementById('global-bar').style.display = 'none';
+  currentApp = null;
+}
+
+function renderAtual() {
+  if (currentApp === 'admin') renderAdmin();
+  if (currentApp === 'vendedor') renderVendedor();
+  if (currentApp === 'cliente') renderCliente();
+  if (currentApp === 'motoboy') renderMotoboy();
+}
+
+// =============================================
+//  APP 1 — ADMINISTRADOR
+// =============================================
+let adminCurrentPage = 'dashboard';
+let adminFiltroTexto = '';
+let adminFiltroLinha = '';
+
+function adminNav(page, el) {
+  adminCurrentPage = page;
+  document.querySelectorAll('#app-admin .nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('#app-admin .page').forEach(p => p.classList.remove('active'));
+  document.getElementById('adm-' + page).classList.add('active');
+  renderAdmin();
+}
+
+function renderAdmin() {
+  renderDashboard();
+  renderEstoqueAdmin();
+  renderKanban();
+  renderRelatorio();
+}
+
+function renderDashboard() {
+  const est = getEstoque();
+  const peds = getPedidos();
+  const todos = [...est.vitrine, ...est.americana];
+
+  let capital = 0, potencial = 0, realizado = 0;
+  todos.forEach(p => {
+    const uni = totalCores(p);
+    capital += p.precoFornecedor * uni;
+    potencial += p.lucro * uni;
+  });
+
+  peds.filter(p => p.status === 'entregue').forEach(p => { realizado += p.lucro || 0; });
+
+  const ativos = peds.filter(p => p.status !== 'entregue').length;
+
+  document.getElementById('d-capital').textContent = fmt(capital);
+  document.getElementById('d-potencial').textContent = fmt(potencial);
+  document.getElementById('d-realizado').textContent = fmt(realizado);
+  document.getElementById('d-pedidos-ativos').textContent = ativos;
+
+  // Resumo por linha
+  let capV = 0, capA = 0, lucV = 0, lucA = 0;
+  est.vitrine.forEach(p => { const u = totalCores(p); capV += p.precoFornecedor*u; lucV += p.lucro*u; });
+  est.americana.forEach(p => { const u = totalCores(p); capA += p.precoFornecedor*u; lucA += p.lucro*u; });
+
+  document.getElementById('d-linha-resumo').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--surface2);border-radius:9px">
+        <div><span class="badge badge-vitrine">VITRINE</span> <span style="font-size:13px;margin-left:8px">${est.vitrine.length} SKUs</span></div>
+        <div><span style="color:var(--green);font-family:'DM Mono',monospace;font-weight:700">${fmt(lucV)}</span> <span style="font-size:11px;color:var(--muted2)">lucro potencial</span></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--surface2);border-radius:9px">
+        <div><span class="badge badge-americana">AMERICANA</span> <span style="font-size:13px;margin-left:8px">${est.americana.length} SKUs</span></div>
+        <div><span style="color:var(--green);font-family:'DM Mono',monospace;font-weight:700">${fmt(lucA)}</span> <span style="font-size:11px;color:var(--muted2)">lucro potencial</span></div>
+      </div>
+    </div>`;
+
+  const ultimos = peds.slice(0, 4);
+  if (!ultimos.length) {
+    document.getElementById('d-ultimos-pedidos').innerHTML = '<div style="color:var(--muted);font-size:13px">Nenhum pedido ainda</div>';
+  } else {
+    document.getElementById('d-ultimos-pedidos').innerHTML = ultimos.map(p => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--surface2);border-radius:8px">
+        <div>
+          <div style="font-size:12px;font-weight:600">${p.cliente}</div>
+          <div style="font-size:10px;color:var(--muted2);font-family:'DM Mono',monospace">${p.produto}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--green)">${fmt(p.valor)}</div>
+          <div style="font-size:10px;color:var(--muted)">${STATUS_LABELS[p.status]}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  // Badge pedidos
+  const novos = peds.filter(p => p.status === 'novo').length;
+  const badge = document.getElementById('admin-badge-pedidos');
+  if (badge) { badge.textContent = novos; badge.style.display = novos ? 'inline' : 'none'; }
+}
+
+const STATUS_LIST = ['novo','preparando','saiu_entrega','entregue'];
+const STATUS_LABELS = { novo:'⏳ Novo', preparando:'🔧 Preparando', saiu_entrega:'🚚 Na Entrega', entregue:'✅ Entregue' };
+const STATUS_NEXT = { novo:'preparando', preparando:'saiu_entrega', saiu_entrega:'entregue' };
+
+function renderEstoqueAdmin() {
+  const est = getEstoque();
+  let todos = [
+    ...est.vitrine.map(p => ({ ...p, linha: 'vitrine' })),
+    ...est.americana.map(p => ({ ...p, linha: 'americana' }))
+  ];
+
+  if (adminFiltroTexto) {
+    const q = adminFiltroTexto.toLowerCase();
+    todos = todos.filter(p => p.modelo.toLowerCase().includes(q) || p.capacidade.toLowerCase().includes(q));
+  }
+  if (adminFiltroLinha) {
+    todos = todos.filter(p => p.linha === adminFiltroLinha);
+  }
+
+  const el = document.getElementById('tbody-estoque');
+  if (!el) return;
+
+  document.getElementById('estoque-count').textContent = todos.length + ' produtos';
+
+  if (!todos.length) {
+    el.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--muted)">Nenhum produto encontrado</td></tr>';
+    return;
+  }
+
+  el.innerHTML = todos.map(p => {
+    const chipsHtml = p.cores.map(c =>
+      `<span class="cor-chip ${c.qtd > 0 ? 'ok' : 'zero'}">${c.nome} ×${c.qtd}</span>`
+    ).join('');
+
+    return `<tr>
+      <td><span class="badge badge-${p.linha}">${p.linha === 'vitrine' ? 'VITRINE' : 'AMERICANA'}</span></td>
+      <td style="font-weight:600">${p.modelo}</td>
+      <td class="mono" style="font-size:12px">${p.capacidade}</td>
+      <td><div class="cor-chips">${chipsHtml}</div></td>
+      <td class="mono muted">${fmt(p.precoFornecedor)}</td>
+      <td class="mono" style="font-weight:600">${fmt(p.precoVenda)}</td>
+      <td class="mono green">+${fmt(p.lucro)}</td>
+      <td style="font-size:12px;color:var(--muted2)">${p.garantia}</td>
+      <td>
+        <div class="row-acts">
+          <button class="act-btn act-edit" onclick="editarProduto('${p.id}','${p.linha}')">✏️</button>
+          <button class="act-btn act-del" onclick="deletarProduto('${p.id}','${p.linha}')">🗑️</button>
+        </div>
+      </td>
     </tr>`;
   }).join('');
-  document.getElementById('rel-total-venda').textContent=fmt(totalVenda);
-  document.getElementById('rel-total-custo').textContent=fmt(totalCusto);
-  document.getElementById('rel-lucro-total').textContent=fmt(totalLucro);
 }
 
-// ==================== PEDIDOS ====================
-function renderPedidos(){
-  let container = document.getElementById('pedidos-container');
-  if(!pedidos.length){container.innerHTML='<div class="empty-state" style="grid-column:1/-1">Nenhum pedido ainda. Crie o primeiro!</div>';return;}
-  container.innerHTML = pedidos.map(p=>{
-    let statusKey = p.status.replace(' ','').toLowerCase();
-    let statusClass = ['preparando','enviado','entregue'].includes(p.status)?'status-'+p.status:'status-novo';
-    return`
-    <div class="pedido-card">
-      <div class="pedido-id">#${p.id} • ${p.pagamento}</div>
-      <div class="pedido-cliente">${p.cliente}</div>
-      <div class="pedido-produto">${p.produto} • ${p.cor}</div>
-      <div class="pedido-status ${statusClass}">
-        <div class="status-dot"></div>
-        <div class="status-label">${STATUS_LABELS[p.status]||p.status}</div>
+function adminFiltrar(v) { adminFiltroTexto = v; renderEstoqueAdmin(); }
+function adminFiltrarLinha(v) { adminFiltroLinha = v; renderEstoqueAdmin(); }
+
+function renderKanban() {
+  const peds = getPedidos();
+  STATUS_LIST.forEach(status => {
+    const col = document.getElementById('k-' + status);
+    const cnt = document.getElementById('k-count-' + status);
+    if (!col || !cnt) return;
+    const lista = peds.filter(p => p.status === status);
+    cnt.textContent = lista.length;
+    if (!lista.length) { col.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:12px">Vazio</div>'; return; }
+    col.innerHTML = lista.map(p => `
+      <div class="pedido-card">
+        <div class="p-id">#${p.id} • ${p.pagamento}</div>
+        <div class="p-cliente">${p.cliente}</div>
+        <div class="p-produto">${p.produto} — ${p.cor}</div>
+        <div class="p-end">📍 ${p.endereco}</div>
+        <div class="p-valor">${fmt(p.valor)}</div>
+        <div class="p-acts">
+          ${status !== 'entregue' ? `<button class="avancar-btn" onclick="avancarPedido('${p.id}')">▶ ${STATUS_LABELS[STATUS_NEXT[status]] || '—'}</button>` : ''}
+          <button class="act-btn act-del" style="margin-left:auto;padding:5px 9px" onclick="removerPedido('${p.id}')">✕</button>
+        </div>
+      </div>`).join('');
+  });
+}
+
+function renderRelatorio() {
+  const est = getEstoque();
+  const todos = [...est.vitrine.map(p=>({...p,linha:'VITRINE'})),...est.americana.map(p=>({...p,linha:'AMERICANA'}))];
+  let tFat=0, tCust=0, tLuc=0;
+  const el = document.getElementById('tbody-relatorio');
+  if (!el) return;
+  el.innerHTML = todos.map(p => {
+    const uni = totalCores(p);
+    const fat = p.precoVenda * uni;
+    const cust = p.precoFornecedor * uni;
+    const luc = p.lucro * uni;
+    const mg = p.precoVenda > 0 ? ((p.lucro / p.precoVenda)*100).toFixed(1) : '0';
+    tFat+=fat; tCust+=cust; tLuc+=luc;
+    return `<tr>
+      <td><span class="badge badge-${p.linha.toLowerCase()}">${p.linha}</span></td>
+      <td style="font-weight:600">${p.modelo}</td>
+      <td class="mono" style="font-size:12px">${p.capacidade}</td>
+      <td class="mono muted">${fmt(p.precoFornecedor)}</td>
+      <td class="mono">${fmt(p.precoVenda)}</td>
+      <td class="mono green">+${fmt(p.lucro)}</td>
+      <td class="mono" style="color:var(--blue)">${mg}%</td>
+      <td class="mono" style="color:var(--muted2)">${uni}</td>
+    </tr>`;
+  }).join('');
+  const rf = document.getElementById('rel-faturamento');
+  const rc = document.getElementById('rel-custo');
+  const rl = document.getElementById('rel-lucro');
+  if(rf) rf.textContent = fmt(tFat);
+  if(rc) rc.textContent = fmt(tCust);
+  if(rl) rl.textContent = fmt(tLuc);
+}
+
+// ============ MODAL PRODUTO ============
+let editandoId = null, editandoLinha = null;
+
+function abrirModalProduto() {
+  editandoId = null; editandoLinha = null;
+  document.getElementById('modal-produto-title').textContent = '📱 Novo Produto';
+  document.getElementById('mp-modelo').value = '';
+  document.getElementById('mp-cap').value = '';
+  document.getElementById('mp-linha').value = 'vitrine';
+  document.getElementById('mp-garantia').value = '40 Dias';
+  document.getElementById('mp-custo').value = '';
+  document.getElementById('mp-venda').value = '';
+  document.getElementById('mp-lucro-preview').textContent = 'R$ —';
+  document.getElementById('cores-editor').innerHTML = '';
+  adicionarCorRow('Preto', 1);
+  adicionarCorRow('Azul', 0);
+  document.getElementById('modal-produto').classList.add('open');
+}
+
+function editarProduto(id, linha) {
+  const est = getEstoque();
+  const p = est[linha].find(x => x.id === id);
+  if (!p) return;
+  editandoId = id; editandoLinha = linha;
+  document.getElementById('modal-produto-title').textContent = '✏️ Editar Produto';
+  document.getElementById('mp-modelo').value = p.modelo;
+  document.getElementById('mp-cap').value = p.capacidade;
+  document.getElementById('mp-linha').value = linha;
+  document.getElementById('mp-garantia').value = p.garantia;
+  document.getElementById('mp-custo').value = p.precoFornecedor;
+  document.getElementById('mp-venda').value = p.precoVenda;
+  calcLucroModal();
+  document.getElementById('cores-editor').innerHTML = '';
+  (p.cores || []).forEach(c => adicionarCorRow(c.nome, c.qtd));
+  document.getElementById('modal-produto').classList.add('open');
+}
+
+function deletarProduto(id, linha) {
+  if (!confirm('Remover este produto?')) return;
+  const est = getEstoque();
+  est[linha] = est[linha].filter(p => p.id !== id);
+  setEstoque(est);
+  renderAdmin();
+  toast('🗑️ Produto removido');
+}
+
+function adicionarCorRow(nome='', qtd=0) {
+  const ed = document.getElementById('cores-editor');
+  const div = document.createElement('div');
+  div.className = 'cor-row';
+  div.innerHTML = `
+    <input type="text" placeholder="Nome da cor (ex: Preto)" value="${nome}">
+    <input type="number" placeholder="Qtd" value="${qtd}" min="0">
+    <button class="remove-cor" onclick="this.closest('.cor-row').remove()">✕</button>`;
+  ed.appendChild(div);
+}
+
+function atualizarGarantiaAuto() {
+  const linha = document.getElementById('mp-linha').value;
+  document.getElementById('mp-garantia').value = linha === 'vitrine' ? '40 Dias' : '6 Meses';
+}
+
+function calcLucroModal() {
+  const c = Number(document.getElementById('mp-custo').value) || 0;
+  const v = Number(document.getElementById('mp-venda').value) || 0;
+  const luc = v - c;
+  const el = document.getElementById('mp-lucro-preview');
+  el.textContent = fmt(luc);
+  el.style.color = luc >= 0 ? 'var(--green)' : 'var(--accent2)';
+}
+
+function salvarProduto() {
+  const modelo = document.getElementById('mp-modelo').value.trim();
+  const cap = document.getElementById('mp-cap').value.trim();
+  const linha = document.getElementById('mp-linha').value;
+  const garantia = document.getElementById('mp-garantia').value.trim();
+  const custo = Number(document.getElementById('mp-custo').value);
+  const venda = Number(document.getElementById('mp-venda').value);
+  if (!modelo || !cap || !custo || !venda) { toast('⚠️ Preencha todos os campos!', 'error'); return; }
+
+  const rows = document.querySelectorAll('#cores-editor .cor-row');
+  const cores = [];
+  rows.forEach(r => {
+    const inputs = r.querySelectorAll('input');
+    const nome = inputs[0].value.trim();
+    const qtd = Number(inputs[1].value) || 0;
+    if (nome) cores.push({ nome, qtd });
+  });
+  if (!cores.length) { toast('⚠️ Adicione pelo menos uma cor!', 'error'); return; }
+
+  const lucro = venda - custo;
+  const est = getEstoque();
+
+  if (editandoId) {
+    const arr = est[editandoLinha];
+    const idx = arr.findIndex(p => p.id === editandoId);
+    if (idx >= 0) {
+      if (editandoLinha !== linha) {
+        arr.splice(idx, 1);
+        const id = linha[0] + Date.now();
+        est[linha].push({ id, modelo, capacidade: cap, precoFornecedor: custo, precoVenda: venda, lucro, garantia, cores });
+      } else {
+        arr[idx] = { ...arr[idx], modelo, capacidade: cap, precoFornecedor: custo, precoVenda: venda, lucro, garantia, cores };
+      }
+    }
+  } else {
+    const id = linha[0] + Date.now();
+    est[linha].push({ id, modelo, capacidade: cap, precoFornecedor: custo, precoVenda: venda, lucro, garantia, cores });
+  }
+
+  setEstoque(est);
+  fecharModal('modal-produto');
+  renderAdmin();
+  toast(editandoId ? '✅ Produto atualizado!' : '🆕 Produto cadastrado!');
+}
+
+// ============ PEDIDOS ============
+function abrirModalNovoPedido() { abrirModalPedido(); }
+function abrirVendaModal() { abrirModalPedido(); }
+
+function abrirModalPedido() {
+  const est = getEstoque();
+  const todos = [...est.vitrine.map(p=>({...p,linha:'vitrine'})),...est.americana.map(p=>({...p,linha:'americana'}))];
+  const sel = document.getElementById('ped-produto');
+  sel.innerHTML = todos.map(p =>
+    `<option value="${p.precoVenda}" data-id="${p.id}" data-linha="${p.linha}">${p.modelo} ${p.capacidade} — ${fmt(p.precoVenda)}</option>`
+  ).join('');
+  atualizarCoresPedido();
+  document.getElementById('ped-cliente').value = '';
+  document.getElementById('ped-endereco').value = '';
+  document.getElementById('modal-pedido').classList.add('open');
+}
+
+function atualizarCoresPedido() {
+  const sel = document.getElementById('ped-produto');
+  if (!sel || !sel.options.length) return;
+  const opt = sel.options[sel.selectedIndex];
+  const id = opt.getAttribute('data-id');
+  const linha = opt.getAttribute('data-linha');
+  const est = getEstoque();
+  const prod = est[linha]?.find(p => p.id === id);
+  const corSel = document.getElementById('ped-cor');
+  const valEl = document.getElementById('ped-valor-preview');
+  valEl.textContent = fmt(Number(sel.value));
+
+  if (prod) {
+    const disponíveis = prod.cores.filter(c => c.qtd > 0);
+    corSel.innerHTML = disponíveis.map(c =>
+      `<option value="${c.nome}">${c.nome} (${c.qtd} em estoque)</option>`
+    ).join('') || '<option value="">Sem estoque</option>';
+  }
+}
+
+let pedidoCounter = 0;
+function salvarPedido() {
+  const cliente = document.getElementById('ped-cliente').value.trim();
+  const endereco = document.getElementById('ped-endereco').value.trim();
+  const pgto = document.getElementById('ped-pgto').value;
+  const sel = document.getElementById('ped-produto');
+  const opt = sel.options[sel.selectedIndex];
+  const produto = opt.text.split('—')[0].trim();
+  const valor = Number(sel.value);
+  const cor = document.getElementById('ped-cor').value;
+  const linha = opt.getAttribute('data-linha');
+  const prodId = opt.getAttribute('data-id');
+
+  if (!cliente || !endereco || !cor) { toast('⚠️ Preencha todos os campos!', 'error'); return; }
+
+  // Calcular lucro do pedido
+  const est = getEstoque();
+  const prod = est[linha]?.find(p => p.id === prodId);
+  const lucroP = prod ? prod.lucro : 0;
+
+  pedidoCounter++;
+  const id = 'NTEi-' + String(pedidoCounter).padStart(3, '0');
+  const peds = getPedidos();
+  peds.unshift({ id, cliente, produto, prodId, linha, valor, lucro: lucroP, cor, endereco, pagamento: pgto, status: 'novo', criadoEm: new Date().toISOString() });
+  setPedidos(peds);
+  fecharModal('modal-pedido');
+  renderAtual();
+  toast('✅ Pedido ' + id + ' criado!');
+}
+
+function avancarPedido(id) {
+  const peds = getPedidos();
+  const p = peds.find(x => x.id === id);
+  if (!p || !STATUS_NEXT[p.status]) return;
+  const novoStatus = STATUS_NEXT[p.status];
+
+  // Baixa automática ao entregar
+  if (novoStatus === 'entregue') {
+    const est = getEstoque();
+    const arr = est[p.linha];
+    if (arr) {
+      const prod = arr.find(x => x.id === p.prodId);
+      if (prod) {
+        const cor = prod.cores.find(c => c.nome === p.cor);
+        if (cor && cor.qtd > 0) cor.qtd--;
+      }
+    }
+    setEstoque(est);
+  }
+
+  p.status = novoStatus;
+  setPedidos(peds);
+  renderAtual();
+  toast(STATUS_LABELS[novoStatus] + ' — ' + p.cliente);
+}
+
+function removerPedido(id) {
+  if (!confirm('Remover pedido?')) return;
+  const peds = getPedidos().filter(p => p.id !== id);
+  setPedidos(peds);
+  renderAtual();
+  toast('🗑️ Pedido removido');
+}
+
+// ============ ROBÔ DE LOTE ============
+function processarLote() {
+  const input = document.getElementById('chat-input').value.trim();
+  const margem = Number(document.getElementById('chat-margem').value) || 300;
+
+  if (!input) { toast('Cole a lista do fornecedor primeiro!', 'error'); return; }
+
+  adicionarMsgChat(input.substring(0,100) + (input.length>100?'...':''), 'user');
+
+  const resultado = parseLoteAtacado(input, margem);
+  adicionarMsgChat(resultado.mensagem, resultado.erro ? 'error' : 'bot');
+
+  document.getElementById('lote-resultado').innerHTML = resultado.resumo || '—';
+  document.getElementById('chat-input').value = '';
+  renderAdmin();
+}
+
+function adicionarMsgChat(msg, tipo) {
+  const body = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + (tipo === 'user' ? 'msg-user' : tipo === 'error' ? 'chat-msg msg-bot msg-error' : 'msg-bot');
+  div.textContent = msg;
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
+
+function limparChat() {
+  document.getElementById('chat-msgs').innerHTML = '<div class="chat-msg msg-bot">🤖 Chat limpo. Cole a lista do fornecedor para processar.</div>';
+  document.getElementById('chat-input').value = '';
+}
+
+// ===== PARSER DO ATACADO — PRINCIPAL =====
+function parseLoteAtacado(texto, margem) {
+  const est = getEstoque();
+  let novos = 0, atualizados = 0, erros = 0;
+  const detalhes = [];
+
+  // Remove cabeçalhos de loja e avisos
+  const linhas = texto.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+  let linhaAtual = null; // 'vitrine' ou 'americana'
+  let modeloAtual = null;
+  let capAtual = null;
+  let precoAtual = null;
+  let coresAtual = [];
+
+  // Detecta seção americana
+  function isAmericana(linha) {
+    return /americano|americana|🍎|🇺🇸/i.test(linha);
+  }
+
+  // Detecta separador de seção
+  function isSectionHeader(linha) {
+    return linha.startsWith('🚨') || linha.startsWith('⸻') || linha.startsWith('—') || /^[💎📲⚫️]{1,2}.*vitrine/i.test(linha);
+  }
+
+  // Extrai modelo + capacidade de uma linha
+  function extrairModelo(linha) {
+    // Remove emojis e símbolos
+    const limpa = linha.replace(/[\u{1F300}-\u{1FFFF}]/gu, '').replace(/[⚫️📲💎🍎🇺🇸]/g, '').replace(/\*/g,'').trim();
+    const match = limpa.match(/iphone\s+(\d+\s*(?:pro\s*max|pro)?(?:\s*max)?)\s*(\d{2,3}\s*g(?:b)?)?/i);
+    if (!match) return null;
+    let modelo = 'iPhone ' + match[1].trim().replace(/\s+/g,' ');
+    modelo = modelo.replace(/iphone/i,'iPhone').replace(/pro max/i,'Pro Max').replace(/pro/i,'Pro');
+    // Capitalize first letter of each word
+    modelo = modelo.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ').replace('Iphone','iPhone');
+    let cap = match[2] ? match[2].replace(/\s/g,'').toUpperCase() : null;
+    if (cap && !cap.includes('GB')) cap = cap + 'GB';
+    if (!cap) {
+      const capMatch = limpa.match(/(\d{2,3})\s*g/i);
+      if (capMatch) cap = capMatch[1] + 'GB';
+    }
+    return { modelo, cap };
+  }
+
+  // Extrai preço de uma linha
+  function extrairPreco(linha) {
+    // Formato: R$ 1.500 ou 💸1500,00 ou R$1500
+    const match = linha.match(/(?:r\$|💸|💵)\s*(\d[\d.,]*)/i);
+    if (!match) return null;
+    return parseInt(match[1].replace(/\./g,'').replace(',',''));
+  }
+
+  // Detecta cor de emoji
+  const EMOJI_COR = {
+    '🤍': 'Branco', '💙': 'Azul', '🖤': 'Preto', '🧡': 'Gold',
+    '💜': 'Roxo', '💚': 'Verde', '🩷': 'Rosa', '🔴': 'Vermelho',
+    '🟡': 'Amarelo', '⚪': 'Branco', '⚫': 'Preto', '🟢': 'Verde'
+  };
+
+  function extrairCores(linha) {
+    const cores = [];
+    for (const [emoji, nome] of Object.entries(EMOJI_COR)) {
+      if (linha.includes(emoji)) cores.push(nome);
+    }
+    // Cores em texto simples
+    const textosCor = ['blue', 'black', 'white', 'gold', 'purple', 'green', 'pink', 'red', 'roxo', 'azul', 'preto', 'branco', 'verde', 'rosa', 'vermelho', 'natural', 'desert', 'starlight', 'midnight', 'yellow'];
+    const linhaLow = linha.toLowerCase().replace(/[*\-]/g, '');
+    textosCor.forEach(c => {
+      if (linhaLow.includes(c) && !cores.find(x => x.toLowerCase() === c)) {
+        cores.push(c.charAt(0).toUpperCase() + c.slice(1));
+      }
+    });
+    return cores;
+  }
+
+  function salvarProdutoLote(modelo, cap, linha, precoForn, cores) {
+    if (!modelo || !cap || !precoForn) return false;
+    const precoVenda = precoForn + margem;
+    const lucro = margem;
+    const garantia = linha === 'vitrine' ? '40 Dias' : '6 Meses';
+    const arr = est[linha];
+    const coresObj = cores.length > 0 ? cores.map(c => ({ nome: c, qtd: 1 })) : [{ nome: 'Padrão', qtd: 1 }];
+
+    const existing = arr.find(p =>
+      p.modelo.toLowerCase() === modelo.toLowerCase() &&
+      p.capacidade.toLowerCase() === cap.toLowerCase()
+    );
+
+    if (existing) {
+      existing.precoFornecedor = precoForn;
+      existing.precoVenda = precoVenda;
+      existing.lucro = lucro;
+      // Merge cores
+      coresObj.forEach(nc => {
+        const cx = existing.cores.find(c => c.nome.toLowerCase() === nc.nome.toLowerCase());
+        if (!cx) existing.cores.push(nc);
+      });
+      atualizados++;
+      detalhes.push(`✏️ ATU: ${modelo} ${cap} (${linha}) → ${fmt(precoVenda)}`);
+    } else {
+      const id = linha[0] + Date.now() + Math.random().toString(36).substr(2,4);
+      arr.push({ id, modelo, capacidade: cap, precoFornecedor: precoForn, precoVenda, lucro, garantia, cores: coresObj });
+      novos++;
+      detalhes.push(`🆕 NEW: ${modelo} ${cap} (${linha}) → ${fmt(precoVenda)}`);
+    }
+    return true;
+  }
+
+  // ===== PARSING =====
+  // Detecta seção atual (vitrine vs americana)
+  for (let i = 0; i < linhas.length; i++) {
+    const l = linhas[i];
+
+    // Detecta mudança de seção
+    if (/vitrine|bateria 100/i.test(l) && !isAmericana(l)) {
+      linhaAtual = 'vitrine';
+      continue;
+    }
+    if (isAmericana(l)) {
+      // Salva o produto anterior se tiver
+      if (modeloAtual && capAtual && precoAtual) {
+        salvarProdutoLote(modeloAtual, capAtual, linhaAtual || 'vitrine', precoAtual, coresAtual);
+        modeloAtual = null; capAtual = null; precoAtual = null; coresAtual = [];
+      }
+      linhaAtual = 'americana';
+      continue;
+    }
+
+    // Avisos gerais — pula
+    if (l.startsWith('🚨') || l.startsWith('⸻') || l.startsWith('📍') || l.startsWith('🛒') || l.startsWith('📞') || l.startsWith('🔗')) continue;
+
+    // Linha contém modelo de iPhone
+    const modeloData = extrairModelo(l);
+    if (modeloData && modeloData.modelo) {
+      // Salva produto anterior
+      if (modeloAtual && capAtual && precoAtual) {
+        salvarProdutoLote(modeloAtual, capAtual, linhaAtual || 'vitrine', precoAtual, coresAtual);
+      }
+      modeloAtual = modeloData.modelo;
+      capAtual = modeloData.cap;
+      coresAtual = extrairCores(l); // cores que podem estar na mesma linha
+      precoAtual = extrairPreco(l); // preço pode estar na mesma linha
+      continue;
+    }
+
+    // Linha com capacidade separada (somente no modelo atual sem cap)
+    if (modeloAtual && !capAtual) {
+      const capMatch = l.match(/(\d{2,3})\s*gb/i);
+      if (capMatch) { capAtual = capMatch[1] + 'GB'; }
+    }
+
+    // Linha com cor
+    if (modeloAtual) {
+      const coresLinha = extrairCores(l);
+      if (coresLinha.length > 0) {
+        coresLinha.forEach(c => { if (!coresAtual.find(x => x === c)) coresAtual.push(c); });
+      }
+    }
+
+    // Linha com preço
+    if (modeloAtual && !precoAtual) {
+      const p = extrairPreco(l);
+      if (p) precoAtual = p;
+    } else if (modeloAtual && extrairPreco(l)) {
+      // Nova linha de preço = salva produto atual
+      if (precoAtual && capAtual) {
+        salvarProdutoLote(modeloAtual, capAtual, linhaAtual || 'vitrine', precoAtual, coresAtual);
+        modeloAtual = null; capAtual = null; precoAtual = null; coresAtual = [];
+      }
+    }
+  }
+
+  // Salva o último produto
+  if (modeloAtual && capAtual && precoAtual) {
+    salvarProdutoLote(modeloAtual, capAtual, linhaAtual || 'vitrine', precoAtual, coresAtual);
+  }
+
+  setEstoque(est);
+
+  const total = novos + atualizados;
+  if (total === 0) {
+    return { mensagem: '⚠️ Nenhum produto reconhecido. Verifique se a lista contém "iPhone" + modelo + capacidade + preço.', erro: true, resumo: '' };
+  }
+
+  return {
+    mensagem: `✅ Processamento concluído!\n🆕 Novos: ${novos} | ✏️ Atualizados: ${atualizados}\n💵 Margem aplicada: ${fmt(margem)}/uni\n\n` + detalhes.join('\n'),
+    resumo: `<span style="color:var(--green)">🆕 ${novos} novos</span><br><span style="color:var(--blue)">✏️ ${atualizados} atualizados</span><br><span style="color:var(--muted2)">Margem: ${fmt(margem)}</span>`
+  };
+}
+
+// =============================================
+//  APP 2 — VENDEDOR
+// =============================================
+let vendedorFiltroTexto = '';
+
+function renderVendedor() {
+  const est = getEstoque();
+  let vitrine = [...est.vitrine];
+  let americana = [...est.americana];
+
+  if (vendedorFiltroTexto) {
+    const q = vendedorFiltroTexto.toLowerCase();
+    vitrine = vitrine.filter(p => p.modelo.toLowerCase().includes(q) || p.capacidade.toLowerCase().includes(q));
+    americana = americana.filter(p => p.modelo.toLowerCase().includes(q) || p.capacidade.toLowerCase().includes(q));
+  }
+
+  const container = document.getElementById('vendedor-tabelas');
+  if (!container) return;
+
+  function renderTabelaVendedor(arr, linha) {
+    if (!arr.length) return '';
+    return `
+      <div class="estoque-table-wrap" style="margin-bottom:16px">
+        <div class="linha-divider">
+          <span class="badge badge-${linha}">${linha.toUpperCase()}</span>
+          ${linha === 'vitrine' ? '📱 Bateria 100% • Garantia 40 Dias com Selo' : '🍎 Americano • Garantia 6 Meses'}
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Modelo</th><th>Capacidade</th><th>Cores Disponíveis</th><th>Garantia</th><th>Preço de Venda</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${arr.map(p => {
+              const coresDisp = p.cores.filter(c => c.qtd > 0);
+              return `<tr>
+                <td style="font-weight:700">${p.modelo}</td>
+                <td class="mono" style="font-size:12px">${p.capacidade}</td>
+                <td><div class="cor-chips">${coresDisp.length > 0 ? coresDisp.map(c => `<span class="cor-chip ok">${c.nome} ×${c.qtd}</span>`).join('') : '<span style="color:var(--accent2);font-size:12px">Esgotado</span>'}</div></td>
+                <td style="font-size:12px;color:var(--muted2)">${p.garantia}</td>
+                <td class="mono" style="font-size:16px;font-weight:800;color:var(--green)">${fmt(p.precoVenda)}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  }
+
+  container.innerHTML = renderTabelaVendedor(vitrine,'vitrine') + renderTabelaVendedor(americana,'americana');
+}
+
+function vendedorFiltrar(v) { vendedorFiltroTexto = v; renderVendedor(); }
+
+// =============================================
+//  APP 3 — CLIENTE
+// =============================================
+let clienteFiltroLinha = '';
+let clienteProdutoSelecionado = null;
+let clienteCorSelecionada = null;
+let clientePgtoAtual = 'pix';
+
+function renderCliente() {
+  const est = getEstoque();
+  let todos = [
+    ...est.vitrine.map(p => ({ ...p, linha: 'vitrine' })),
+    ...est.americana.map(p => ({ ...p, linha: 'americana' }))
+  ];
+
+  if (clienteFiltroLinha) {
+    todos = todos.filter(p => p.linha === clienteFiltroLinha);
+  }
+
+  const grid = document.getElementById('produto-grid-cliente');
+  if (!grid) return;
+
+  grid.innerHTML = todos.map(p => {
+    const totalUni = totalCores(p);
+    const foto = getFoto(p.modelo);
+    const coresDisp = p.cores.filter(c => c.qtd > 0);
+
+    return `
+    <div class="produto-card-client ${totalUni === 0 ? 'esgotado' : ''}" id="card-${p.id}">
+      <div class="product-img-wrap">
+        <img src="${foto}" alt="${p.modelo}" onerror="this.src='https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-1inch-blacktitanium?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1693009278345'">
+        <div class="product-linha-tag"><span class="badge badge-${p.linha}">${p.linha === 'vitrine' ? '100%' : '🍎'}</span></div>
       </div>
-      <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:8px">${p.endereco}</div>
-      <div class="pedido-valor">${fmt(p.valor)}</div>
-      <div class="pedido-actions">
-        <button class="status-btn btn-avancar" onclick="avancarStatus('${p.id}')">▶ Avançar Status</button>
-        <button class="status-btn action-del" style="flex:0;padding:7px 10px;border-radius:8px;background:var(--accent2)20;color:var(--accent2);font-size:11px;font-weight:600;border:none;cursor:pointer" onclick="removerPedido('${p.id}')">✕</button>
+      <div class="product-info">
+        <div class="p-model">${p.modelo}</div>
+        <div class="p-cap">${p.capacidade} • ${p.garantia}</div>
+        <div class="color-dots" id="dots-${p.id}">
+          ${p.cores.map((c, ci) => `
+            <div class="color-dot ${c.qtd === 0 ? 'zero' : ''}"
+              style="background:${getCorHex(c.nome)}"
+              title="${c.nome}${c.qtd === 0 ? ' (Esgotado)' : ''}"
+              onclick="${c.qtd > 0 ? `selecionarCor('${p.id}','${c.nome}','${p.linha}', ${p.precoVenda}, this)` : ''}">
+            </div>`).join('')}
+        </div>
+        <div class="p-price">${fmt(p.precoVenda)}</div>
+        <button class="buy-btn ${totalUni === 0 ? 'esgotado-btn' : ''}"
+          id="buybtn-${p.id}"
+          onclick="${totalUni > 0 ? `abrirCheckout('${p.id}','${p.linha}')` : ''}">
+          ${totalUni === 0 ? '😔 Esgotado' : '🛍️ Comprar Agora'}
+        </button>
       </div>
     </div>`;
   }).join('');
-
-  let cnts = {novo:0,preparando:0,enviado:0,entregue:0};
-  pedidos.forEach(p=>{ if(cnts[p.status]!==undefined)cnts[p.status]++; });
-  document.getElementById('cnt-novo').textContent=cnts.novo;
-  document.getElementById('cnt-prep').textContent=cnts.preparando;
-  document.getElementById('cnt-env').textContent=cnts.enviado;
-  document.getElementById('cnt-ent').textContent=cnts.entregue;
-
-  renderEntregador();
 }
 
-function avancarStatus(id){
-  let p = pedidos.find(x=>x.id===id);
-  if(!p) return;
-  let idx = STATUS_LIST.indexOf(p.status);
-  if(idx < STATUS_LIST.length-1){ p.status = STATUS_LIST[idx+1]; }
-  renderPedidos();
-  showToast('Status atualizado: '+STATUS_LABELS[p.status]);
-  updatePedidoBadge();
+function getCorHex(nome) {
+  const mapa = {
+    'preto': '#1a1a1a', 'black': '#1a1a1a', 'midnight': '#1a1a2e',
+    'branco': '#f0f0f0', 'white': '#f0f0f0', 'starlight': '#f5f0e8',
+    'azul': '#2563eb', 'blue': '#2563eb',
+    'roxo': '#7c3aed', 'purple': '#7c3aed', 'deep purple': '#4c1d95',
+    'gold': '#d97706', 'dourado': '#d97706',
+    'verde': '#16a34a', 'green': '#16a34a',
+    'rosa': '#ec4899', 'pink': '#ec4899',
+    'vermelho': '#dc2626', 'red': '#dc2626', 'product red': '#dc2626',
+    'natural': '#c0a882', 'desert': '#c8a96e', 'titanium': '#8a8a8a',
+    'silver': '#9ca3af', 'graphite': '#4b5563'
+  };
+  return mapa[nome.toLowerCase()] || '#666688';
 }
 
-function removerPedido(id){
-  pedidos = pedidos.filter(x=>x.id!==id);
-  renderPedidos();
-  updatePedidoBadge();
+function selecionarCor(prodId, corNome, linha, preco, el) {
+  document.querySelectorAll(`#dots-${prodId} .color-dot`).forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+  clienteCorSelecionada = corNome;
+  clienteProdutoSelecionado = { id: prodId, cor: corNome, linha, preco };
 }
 
-function openNovoPedido(){
-  let sel = document.getElementById('p-produto');
-  let all = [...estoque.vitrine,...estoque.americana];
-  sel.innerHTML = all.map(p=>`<option value="${p.precoVenda}">${p.modelo} ${p.capacidade} — ${fmt(p.precoVenda)}</option>`).join('');
-  document.getElementById('pedido-modal').classList.add('open');
+function clienteFiltrar(linha, btn) {
+  clienteFiltroLinha = linha;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCliente();
 }
 
-function criarPedido(){
-  let cliente = document.getElementById('p-cliente').value.trim();
-  let prodEl = document.getElementById('p-produto');
-  let produto = prodEl.options[prodEl.selectedIndex].text.split('—')[0].trim();
-  let valor = Number(prodEl.value);
-  let endereco = document.getElementById('p-endereco').value.trim();
-  let pgto = document.getElementById('p-pgto').value;
-  let cor = document.getElementById('p-cor').value.trim()||'—';
-  if(!cliente||!endereco){showToast('Preencha cliente e endereço!');return;}
+function abrirCheckout(prodId, linha) {
+  const est = getEstoque();
+  const prod = est[linha].find(p => p.id === prodId);
+  if (!prod) return;
+
+  // Define cor padrão (primeira disponível)
+  const corPad = prod.cores.find(c => c.qtd > 0);
+  if (!corPad) { toast('Produto esgotado!', 'error'); return; }
+  const corAtual = clienteCorSelecionada && prod.cores.find(c => c.nome === clienteCorSelecionada && c.qtd > 0)
+    ? clienteCorSelecionada : corPad.nome;
+
+  clienteProdutoSelecionado = { id: prodId, linha, preco: prod.precoVenda, prodData: prod, cor: corAtual };
+
+  document.getElementById('checkout-img').src = getFoto(prod.modelo);
+  document.getElementById('checkout-modelo').textContent = prod.modelo + ' ' + prod.capacidade;
+  document.getElementById('checkout-cor-sel').textContent = 'Cor: ' + corAtual + ' • ' + prod.garantia;
+  document.getElementById('checkout-preco').textContent = fmt(prod.precoVenda);
+  document.getElementById('co-nome').value = '';
+  document.getElementById('co-endereco').value = '';
+  document.getElementById('modal-checkout').classList.add('open');
+}
+
+function selecionarPgto(tipo, el) {
+  clientePgtoAtual = tipo;
+  document.querySelectorAll('.pgto-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.pgto-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('pgto-' + tipo).classList.add('active');
+}
+
+function copiarPix() {
+  navigator.clipboard.writeText('49304655838').then(() => toast('✅ Chave PIX copiada!')).catch(() => toast('Chave: 49304655838'));
+}
+
+function formatCard(input) {
+  let v = input.value.replace(/\D/g,'');
+  v = v.match(/.{1,4}/g)?.join(' ') || v;
+  input.value = v;
+}
+
+function confirmarCompraCliente() {
+  const nome = document.getElementById('co-nome').value.trim();
+  const endereco = document.getElementById('co-endereco').value.trim();
+  if (!nome || !endereco) { toast('⚠️ Preencha nome e endereço!', 'error'); return; }
+  if (!clienteProdutoSelecionado) { toast('Erro ao identificar produto!', 'error'); return; }
+
+  const prod = clienteProdutoSelecionado.prodData;
+  const pgtoLabel = { pix: 'PIX', cartao: 'Cartão', dinheiro: 'Dinheiro' };
+
   pedidoCounter++;
-  pedidos.unshift({id:'NTEi-'+pedidoCounter, cliente, produto, valor, endereco, pagamento:pgto, cor, status:'novo'});
-  document.getElementById('pedido-modal').classList.remove('open');
-  renderPedidos();
-  updatePedidoBadge();
-  showToast('✅ Pedido #NTEi-'+pedidoCounter+' criado!');
-}
-
-function updatePedidoBadge(){
-  let n = pedidos.filter(p=>p.status==='novo').length;
-  document.getElementById('pedidos-badge').textContent = n;
-  document.getElementById('pedidos-badge').style.display = n?'inline':'none';
-}
-
-// ENTREGADOR
-function authEntregador(){
-  let code = document.getElementById('entregador-code').value;
-  if(code==='ntei2025'||code==='1234'){
-    document.getElementById('entregador-panel').style.display='block';
-    renderEntregador();
-    showToast('🔓 Acesso liberado!');
-  } else { showToast('❌ Código inválido'); }
-}
-
-function renderEntregador(){
-  let cont = document.getElementById('entregador-pedidos');
-  if(!cont) return;
-  let ativos = pedidos.filter(p=>p.status!=='entregue');
-  if(!ativos.length){cont.innerHTML='<div class="empty-state">Nenhum pedido pendente</div>';return;}
-  cont.innerHTML = ativos.map(p=>`
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div>
-          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">#${p.id}</div>
-          <div style="font-size:15px;font-weight:700;margin:4px 0">${p.cliente}</div>
-          <div style="font-size:12px;color:var(--muted)">${p.produto} • ${p.cor}</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:4px">📍 ${p.endereco}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:var(--green)">${fmt(p.valor)}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px">${p.pagamento}</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button onclick="avancarStatus('${p.id}');renderEntregador()" style="flex:1;padding:8px;background:var(--green)20;color:var(--green);border:1px solid var(--green)40;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px">
-          ▶ ${STATUS_LABELS[STATUS_LIST[Math.min(STATUS_LIST.indexOf(p.status)+1,STATUS_LIST.length-1)]]||'Concluído'}
-        </button>
-        <div style="padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--accent);font-family:'DM Mono',monospace">
-          ${STATUS_LABELS[p.status]}
-        </div>
-      </div>
-    </div>`).join('');
-}
-
-// ==================== CHAT UPDATE ====================
-function sendChat(){
-  let input = document.getElementById('chat-input');
-  let msg = input.value.trim();
-  if(!msg) return;
-  let body = document.getElementById('chat-body');
-  body.innerHTML += `<div class="msg msg-user">${msg}</div>`;
-  input.value='';
-
-  setTimeout(()=>{
-    let result = parseChatMessage(msg);
-    body.innerHTML += `<div class="msg msg-sys">${result}</div>`;
-    body.scrollTop=body.scrollHeight;
-    renderTables();
-  },600);
-  body.scrollTop=body.scrollHeight;
-}
-
-function parseChatMessage(msg){
-  let lower = msg.toLowerCase();
-  // Detect iPhone model
-  let modelMatch = msg.match(/iphone\s+\d+(\s+pro(\s+max)?)?(\s+max)?/i);
-  if(!modelMatch) return '❌ Modelo não encontrado. Use: iPhone [modelo] [cap] [cores] [linha] R$ [custo] venda R$ [venda]';
-  
-  let modelo = modelMatch[0].replace(/\s+/g,' ').trim();
-  modelo = modelo.charAt(0).toUpperCase() + modelo.slice(1).toLowerCase().replace(/iphone/,'iPhone');
-  
-  let capMatch = msg.match(/\d{3}gb/i);
-  let capacidade = capMatch ? capMatch[0].toUpperCase() : '128GB';
-  
-  let linhaMatch = lower.includes('americana') ? 'americana' : 'vitrine';
-  
-  let custoMatch = msg.match(/r\$\s*([\d.,]+)/i);
-  let vendaMatch = msg.match(/venda\s+r\$\s*([\d.,]+)/i);
-  
-  let custo = custoMatch ? parseInt(custoMatch[1].replace(/\D/g,'')) : 0;
-  let venda = vendaMatch ? parseInt(vendaMatch[1].replace(/\D/g,'')) : 0;
-  
-  if(!custo || !venda) return '⚠️ Preços não encontrados. Formato: R$ [custo] venda R$ [venda]';
-  
-  let lucro = venda - custo;
-  let garantia = linhaMatch==='vitrine' ? '40 Dias' : '6 Meses';
-  
-  // check if exists
-  let arr = estoque[linhaMatch];
-  let existing = arr.find(p=>p.modelo.toLowerCase()===modelo.toLowerCase()&&p.capacidade.toLowerCase()===capacidade.toLowerCase());
-  
-  if(existing){
-    existing.precoFornecedor = custo;
-    existing.precoVenda = venda;
-    existing.lucro = lucro;
-    return `✅ ATUALIZADO — ${modelo} ${capacidade} (${linhaMatch})\n💰 Fornec: ${fmt(custo)} → Venda: ${fmt(venda)} | Lucro: ${fmt(lucro)}`;
-  } else {
-    let id = linhaMatch[0]+Date.now();
-    arr.push({id, modelo, capacidade, cores:['Preto'], precoFornecedor:custo, precoVenda:venda, lucro, garantia});
-    return `🆕 CADASTRADO — ${modelo} ${capacidade} (${linhaMatch})\n💰 Fornec: ${fmt(custo)} → Venda: ${fmt(venda)} | Lucro: ${fmt(lucro)}`;
-  }
-}
-
-// ==================== MODAL ====================
-let editingId=null, editingLinha=null;
-function openModal(){
-  editingId=null;editingLinha=null;
-  document.getElementById('m-modelo').value='';
-  document.getElementById('m-cap').value='';
-  document.getElementById('m-cores').value='';
-  document.getElementById('m-linha').value='vitrine';
-  document.getElementById('m-garantia').value='40 Dias';
-  document.getElementById('m-custo').value='';
-  document.getElementById('m-venda').value='';
-  document.getElementById('modal-overlay').classList.add('open');
-}
-function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
-
-function editProduct(id, linha){
-  let p = estoque[linha].find(x=>x.id===id);
-  if(!p) return;
-  editingId=id; editingLinha=linha;
-  document.getElementById('m-modelo').value=p.modelo;
-  document.getElementById('m-cap').value=p.capacidade;
-  document.getElementById('m-cores').value=p.cores.join(', ');
-  document.getElementById('m-linha').value=linha;
-  document.getElementById('m-garantia').value=p.garantia;
-  document.getElementById('m-custo').value=p.precoFornecedor;
-  document.getElementById('m-venda').value=p.precoVenda;
-  document.getElementById('modal-overlay').classList.add('open');
-}
-
-function deleteProduct(id, linha){
-  if(!confirm('Remover este produto?')) return;
-  estoque[linha] = estoque[linha].filter(p=>p.id!==id);
-  renderTables();
-  showToast('🗑️ Produto removido');
-}
-
-function saveModal(){
-  let modelo = document.getElementById('m-modelo').value.trim();
-  let cap = document.getElementById('m-cap').value.trim();
-  let cores = document.getElementById('m-cores').value.split(',').map(c=>c.trim()).filter(Boolean);
-  let linha = document.getElementById('m-linha').value;
-  let garantia = document.getElementById('m-garantia').value.trim();
-  let custo = Number(document.getElementById('m-custo').value);
-  let venda = Number(document.getElementById('m-venda').value);
-  if(!modelo||!cap||!custo||!venda){showToast('⚠️ Preencha todos os campos!');return;}
-  let lucro = venda-custo;
-  if(editingId){
-    let p = estoque[editingLinha].find(x=>x.id===editingId);
-    if(p){Object.assign(p,{modelo,capacidade:cap,cores,precoFornecedor:custo,precoVenda:venda,lucro,garantia});}
-  } else {
-    let id = linha[0]+Date.now();
-    estoque[linha].push({id,modelo,capacidade:cap,cores,precoFornecedor:custo,precoVenda:venda,lucro,garantia});
-  }
-  closeModal();
-  renderTables();
-  showToast(editingId?'✅ Produto atualizado!':'✅ Produto cadastrado!');
-}
-
-function cadastrarProduto(){
-  let modelo = document.getElementById('cad-modelo').value.trim();
-  let cap = document.getElementById('cad-cap').value.trim();
-  let cores = document.getElementById('cad-cores').value.split(',').map(c=>c.trim()).filter(Boolean);
-  let linha = document.getElementById('cad-linha').value;
-  let custo = Number(document.getElementById('cad-custo').value);
-  let venda = Number(document.getElementById('cad-venda').value);
-  let garantia = document.getElementById('cad-garantia').value.trim();
-  if(!modelo||!cap||!custo||!venda){showToast('⚠️ Preencha todos os campos!');return;}
-  let lucro = venda-custo;
-  let id = linha[0]+Date.now();
-  estoque[linha].push({id,modelo,capacidade:cap,cores:cores.length?cores:['Preto'],precoFornecedor:custo,precoVenda:venda,lucro,garantia:garantia||'40 Dias'});
-  limparForm();
-  showPage('estoque');
-  renderTables();
-  showToast('✅ Produto cadastrado com sucesso!');
-}
-
-function limparForm(){
-  ['cad-modelo','cad-cap','cad-cores','cad-custo','cad-venda','cad-garantia','cad-foto'].forEach(id=>{
-    let el = document.getElementById(id); if(el) el.value='';
+  const id = 'NTEi-' + String(pedidoCounter).padStart(3,'0');
+  const peds = getPedidos();
+  peds.unshift({
+    id, cliente: nome,
+    produto: prod.modelo + ' ' + prod.capacidade,
+    prodId: prod.id,
+    linha: clienteProdutoSelecionado.linha,
+    valor: prod.precoVenda,
+    lucro: prod.lucro,
+    cor: clienteProdutoSelecionado.cor,
+    endereco,
+    pagamento: pgtoLabel[clientePgtoAtual] || 'PIX',
+    status: 'novo',
+    criadoEm: new Date().toISOString()
   });
+  setPedidos(peds);
+  fecharModal('modal-checkout');
+  toast('🎉 Pedido ' + id + ' realizado! Entraremos em contato em breve.');
+  renderCliente();
 }
 
-// ==================== NAV ====================
-function showPage(name){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-  const titles = {estoque:'📦 Estoque',pedidos:'🛒 Pedidos',entregador:'🚚 Entregador',produtos:'✏️ Cadastro',chat:'💬 Atualizar via Chat',relatorio:'📊 Relatório'};
-  document.getElementById('page-title').textContent = titles[name]||name;
-  if(name==='pedidos') renderPedidos();
+// =============================================
+//  APP 4 — MOTOBOY
+// =============================================
+function renderMotoboy() {
+  const peds = getPedidos();
+  const ativos = peds.filter(p => p.status !== 'entregue');
+  const container = document.getElementById('motoboy-lista');
+  if (!container) return;
+
+  if (!ativos.length) {
+    container.innerHTML = `
+      <div class="moto-empty">
+        <span class="moto-empty-icon">😎</span>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px">Nenhuma corrida ativa</div>
+        <div style="font-size:13px">Todos os pedidos foram entregues!</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = ativos.map(p => {
+    const endEnc = encodeURIComponent(p.endereco);
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${endEnc}`;
+
+    return `
+    <div class="corrida-card">
+      <div class="corrida-header">
+        <div>
+          <div class="corrida-id">#${p.id}</div>
+          <div class="corrida-cliente">${p.cliente}</div>
+        </div>
+        <span class="status-pill status-${p.status}">${STATUS_LABELS[p.status]?.replace(/[⏳🔧🚚✅]/g,'').trim() || p.status}</span>
+      </div>
+      <div class="corrida-produto">📱 ${p.produto} — ${p.cor}</div>
+      <div class="corrida-endereco">📍 <span>${p.endereco}</span></div>
+      <div class="corrida-valor">${fmt(p.valor)} <span style="font-size:12px;color:var(--muted);font-weight:400">${p.pagamento}</span></div>
+      <div class="corrida-btns">
+        <button class="gps-btn" onclick="window.open('${mapsUrl}','_blank')">
+          🗺️ Iniciar Rota no GPS
+        </button>
+        ${p.status !== 'entregue' ? `
+          <button class="avancar-btn" onclick="avancarPedido('${p.id}')">
+            ▶ ${STATUS_LABELS[STATUS_NEXT[p.status]] || 'Avançar'}
+          </button>
+          ${p.status === 'saiu_entrega' ? `
+          <button class="entregar-btn" onclick="confirmarEntregaMoto('${p.id}')">
+            ✅ Confirmar Entrega e Recebimento
+          </button>` : ''}
+        ` : ''}
+      </div>
+    </div>`;
+  }).join('');
 }
 
-// ==================== FILTERS ====================
-function filterTable(v){filterText=v;renderTables();}
-window.filterLinha = function(v){filterLinha=v;renderTables();}
-
-// ==================== TOAST ====================
-function showToast(msg){
-  let t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
+function confirmarEntregaMoto(id) {
+  if (!confirm('Confirmar entrega? Isso vai dar baixa no estoque e registrar o lucro.')) return;
+  avancarPedido(id);
+  toast('✅ Entrega confirmada! Estoque atualizado e lucro registrado.');
 }
 
-// INIT
-renderTables();
-updatePedidoBadge();
+// =============================================
+//  HELPERS
+// =============================================
+function fecharModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function toast(msg, tipo = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + tipo;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// Fecha modal clicando fora
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// =============================================
+//  INIT
+// =============================================
+initDB();
 </script>
 </body>
 </html>
