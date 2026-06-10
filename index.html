@@ -1,151 +1,488 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro Ultra - V3.1 Clean</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0d1117; color: #e6edf3; }
-        .glass-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; }
-        .input-dark { background: #0d1117; border: 1px solid #30363d; color: white; }
-        .input-dark:focus { border-color: #58a6ff; outline: none; }
-        .btn-blue { background-color: #238636; transition: 0.2s; }
-        .btn-blue:hover { background-color: #2ea043; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberSOC — Security Operations Center</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg:       #060a0f;
+    --surface:  #0d1520;
+    --panel:    #111c2b;
+    --border:   #1a2d45;
+    --accent:   #00d4ff;
+    --green:    #00ff88;
+    --red:      #ff3b5c;
+    --yellow:   #ffc83d;
+    --purple:   #a855f7;
+    --text:     #c8dff5;
+    --muted:    #4a6a8a;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-ui:   'Inter', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-ui);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono); font-weight: 700; font-size: 14px;
+    letter-spacing: 2px; color: var(--accent);
+  }
+  .logo-icon { font-size: 20px; }
+  .header-status {
+    display: flex; gap: 20px; align-items: center;
+    font-family: var(--font-mono); font-size: 11px;
+  }
+  .status-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:5px; }
+  .dot-green { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+  .dot-red   { background: var(--red);   box-shadow: 0 0 6px var(--red); }
+  .dot-yellow{ background: var(--yellow);box-shadow: 0 0 6px var(--yellow);}
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  .header-time { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+
+  /* ── NAV TABS ── */
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; gap: 4px;
+    overflow-x: auto;
+  }
+  nav::-webkit-scrollbar { height: 0; }
+  .tab {
+    padding: 10px 16px;
+    font-size: 12px; font-weight: 500;
+    color: var(--muted);
+    border: none; background: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all .2s;
+    font-family: var(--font-mono);
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── MAIN LAYOUT ── */
+  main { padding: 20px 24px; max-width: 1400px; margin: 0 auto; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── PANELS ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  @media(max-width:900px) { .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; } }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .card-title {
+    font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+    color: var(--muted); text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title .icon { font-size: 14px; }
+
+  /* ── FORM ELEMENTS ── */
+  .input-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  input[type=text], input[type=url], textarea, select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 8px 12px;
+    flex: 1;
+    outline: none;
+    transition: border-color .2s;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 80px; }
+  select option { background: var(--surface); }
+
+  .btn {
+    padding: 8px 16px;
+    border: none; border-radius: 6px;
+    font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+    cursor: pointer; white-space: nowrap;
+    transition: all .2s;
+  }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-primary:hover { background: #00b8e0; }
+  .btn-danger  { background: var(--red);   color: #fff; }
+  .btn-success { background: var(--green); color: #000; }
+  .btn-ghost   { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* ── OUTPUT TERMINAL ── */
+  .terminal {
+    background: #030810;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.8;
+    min-height: 120px;
+    max-height: 320px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .terminal::-webkit-scrollbar { width: 4px; }
+  .terminal::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .t-ok    { color: var(--green); }
+  .t-err   { color: var(--red); }
+  .t-warn  { color: var(--yellow); }
+  .t-info  { color: var(--accent); }
+  .t-muted { color: var(--muted); }
+
+  /* ── BADGE ── */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 10px; font-weight: 700;
+    font-family: var(--font-mono);
+  }
+  .badge-ok   { background: #003d1f; color: var(--green); border: 1px solid var(--green); }
+  .badge-fail { background: #3d0010; color: var(--red);   border: 1px solid var(--red); }
+  .badge-warn { background: #3d2900; color: var(--yellow);border: 1px solid var(--yellow);}
+  .badge-info { background: #00293d; color: var(--accent);border: 1px solid var(--accent);}
+
+  /* ── DASHBOARD METRICS ── */
+  .metric-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+  .metric-num {
+    font-family: var(--font-mono);
+    font-size: 32px; font-weight: 700;
+    line-height: 1;
+  }
+  .metric-label { font-size: 11px; color: var(--muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ── LOG TABLE ── */
+  .log-table { width: 100%; border-collapse: collapse; font-size: 11px; font-family: var(--font-mono); }
+  .log-table th { color: var(--muted); font-weight: 600; padding: 8px; text-align: left; border-bottom: 1px solid var(--border); }
+  .log-table td { padding: 7px 8px; border-bottom: 1px solid #0d1520; }
+  .log-table tr:hover td { background: #0d1a29; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap { background: var(--surface); border-radius: 4px; height: 8px; overflow: hidden; margin: 4px 0; }
+  .progress-bar  { height: 100%; border-radius: 4px; transition: width .4s; }
+
+  /* ── HASH SECTION ── */
+  .hash-result { font-family: var(--font-mono); font-size: 11px; background: var(--surface); padding: 10px; border-radius: 6px; border: 1px solid var(--border); word-break: break-all; margin-top: 8px; }
+  .hash-label  { font-size: 10px; color: var(--muted); margin-bottom: 3px; }
+
+  /* ── PWD STRENGTH ── */
+  .pwd-bars { display: flex; gap: 4px; margin: 8px 0; }
+  .pwd-bar  { flex:1; height:6px; border-radius:3px; background: var(--border); transition: background .3s; }
+
+  /* spinner */
+  .spin { display:inline-block; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* section title */
+  .section-header { margin-bottom: 20px; }
+  .section-header h2 { font-size: 18px; font-weight: 600; color: var(--text); }
+  .section-header p  { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* tag */
+  .tag { display:inline-block; padding:1px 6px; border-radius:3px; font-size:9px; font-weight:700; font-family:var(--font-mono); text-transform:uppercase; margin-left:6px; }
+  .tag-live { background:#003d1f; color:var(--green); border:1px solid var(--green); }
+  .tag-api  { background:#00293d; color:var(--accent);border:1px solid var(--accent);}
+
+  /* scrollbar global */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
 </head>
-<body class="p-4 md:p-8">
+<body>
 
-    <div class="max-w-5xl mx-auto">
-        <header class="mb-8 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-white">STOCK<span class="text-blue-500">PRO</span> <span class="text-xs font-normal text-gray-500">V3.1</span></h1>
-            <button onclick="limparTudo()" class="text-xs text-red-500 hover:underline">Resetar Estoque</button>
-        </header>
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <span class="logo-icon">⬡</span>
+    CYBER<span style="color:#fff">SOC</span>
+    <span style="font-size:10px;color:var(--muted);font-weight:300">v2.4</span>
+  </div>
+  <div class="header-status">
+    <span><span class="status-dot dot-green"></span>SISTEMA ONLINE</span>
+    <span><span class="status-dot dot-yellow"></span>3 ALERTAS</span>
+  </div>
+  <div class="header-time" id="clock">--:--:--</div>
+</header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="glass-card p-5 h-fit">
-                <h2 class="text-sm font-semibold mb-4 text-gray-400 uppercase tracking-wider">Cadastrar Item</h2>
-                <div class="space-y-3">
-                    <input type="text" id="p-nome" placeholder="Nome do Produto" class="w-full p-2 rounded input-dark text-sm">
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="number" id="p-custo" placeholder="Custo R$" class="p-2 rounded input-dark text-sm">
-                        <input type="number" id="p-venda" placeholder="Venda R$" class="p-2 rounded input-dark text-sm">
-                    </div>
-                    <input type="number" id="p-qtd" placeholder="Quantidade inicial" class="w-full p-2 rounded input-dark text-sm">
-                    <button onclick="adicionarProduto()" class="w-full btn-blue text-white font-bold py-2 rounded text-sm uppercase">Salvar no Estoque</button>
-                </div>
-            </div>
+<!-- NAV -->
+<nav>
+  <button class="tab active" onclick="showTab('dashboard')">📊 Dashboard</button>
+  <button class="tab" onclick="showTab('headers')">🛡️ HTTP Headers</button>
+  <button class="tab" onclick="showTab('dns')">🌐 DNS Lookup</button>
+  <button class="tab" onclick="showTab('ssl')">🔒 SSL/TLS</button>
+  <button class="tab" onclick="showTab('hash')">🔑 Hash Tools</button>
+  <button class="tab" onclick="showTab('password')">🔐 Força de Senha</button>
+  <button class="tab" onclick="showTab('ip')">📡 IP / WHOIS</button>
+  <button class="tab" onclick="showTab('encoder')">⚙️ Encoder</button>
+  <button class="tab" onclick="showTab('logs')">📋 Event Log</button>
+</nav>
 
-            <div class="lg:col-span-2">
-                <div class="glass-card overflow-hidden">
-                    <table class="w-full text-left">
-                        <thead class="bg-[#1f242c] text-gray-400 text-[10px] uppercase">
-                            <tr>
-                                <th class="p-4">Produto / Status</th>
-                                <th class="p-4 text-center">Qtd</th>
-                                <th class="p-4">Custo</th>
-                                <th class="p-4">Venda</th>
-                                <th class="p-4 text-right">Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabela-corpo" class="divide-y divide-[#30363d]"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+<main>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- DASHBOARD -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="section active" id="sec-dashboard">
+  <div class="section-header">
+    <h2>Security Operations Center <span class="tag tag-live">AO VIVO</span></h2>
+    <p>Visão geral em tempo real do ambiente de segurança.</p>
+  </div>
+
+  <div class="grid-4" style="margin-bottom:16px">
+    <div class="metric-card">
+      <div class="metric-num t-ok" id="dash-scans">0</div>
+      <div class="metric-label">Análises Realizadas</div>
     </div>
+    <div class="metric-card">
+      <div class="metric-num t-warn" id="dash-vulns">0</div>
+      <div class="metric-label">Vulnerabilidades Detectadas</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-num t-err" id="dash-critical">0</div>
+      <div class="metric-label">Críticos</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-num t-info" id="dash-events">0</div>
+      <div class="metric-label">Eventos Registrados</div>
+    </div>
+  </div>
 
-    <script>
-        const DB_KEY = 'stockpro_v3_clean';
-        
-        const iniciais = [
-            { id: 1, nome: "AIRPODS MAX", custo: 150, venda: 250, qtd: 5 },
-            { id: 2, nome: "SMARTWATCH D20", custo: 30, venda: 80, qtd: 12 },
-            { id: 3, nome: "CAIXA JBL GO 3", custo: 120, venda: 220, qtd: 3 }
-        ];
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="icon">📡</span> Feed de Ameaças em Tempo Real</div>
+      <div id="threat-feed" class="terminal" style="min-height:220px"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">📊</span> Status das Ferramentas</div>
+      <div id="tool-status"></div>
+    </div>
+  </div>
 
-        let produtos = JSON.parse(localStorage.getItem(DB_KEY)) || iniciais;
+  <div class="grid-2" style="margin-top:16px">
+    <div class="card">
+      <div class="card-title"><span class="icon">🔥</span> Top Vulnerabilidades (OWASP Top 10)</div>
+      <div id="owasp-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">🗺️</span> Análise Rápida de Alvo</div>
+      <div class="input-row">
+        <input type="text" id="quick-target" placeholder="exemplo.com.br" />
+        <button class="btn btn-primary" onclick="quickScan()">SCAN</button>
+      </div>
+      <div id="quick-output" class="terminal" style="min-height:160px">
+<span class="t-muted">// Insira um domínio e clique em SCAN</span>
+      </div>
+    </div>
+  </div>
+</div>
 
-        function adicionarProduto() {
-            const nome = document.getElementById('p-nome').value.toUpperCase();
-            const custo = parseFloat(document.getElementById('p-custo').value) || 0;
-            const venda = parseFloat(document.getElementById('p-venda').value) || 0;
-            const qtd = parseInt(document.getElementById('p-qtd').value) || 0;
+<!-- ════════════════════════════════════════════════════ -->
+<!-- HTTP HEADERS -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="section" id="sec-headers">
+  <div class="section-header">
+    <h2>Análise de Segurança HTTP <span class="tag tag-live">REAL</span></h2>
+    <p>Verifica os headers de segurança de qualquer site — detecta ausência de CSP, HSTS, X-Frame-Options e mais.</p>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title"><span class="icon">🛡️</span> Scanner de Headers de Segurança</div>
+    <div class="input-row">
+      <input type="text" id="header-url" placeholder="https://exemplo.com.br" value="https://exemplo.com.br" />
+      <button class="btn btn-primary" id="header-btn" onclick="scanHeaders()">ANALISAR</button>
+    </div>
+    <div id="header-results"></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon">📚</span> Referência: Headers de Segurança</div>
+    <div id="header-reference"></div>
+  </div>
+</div>
 
-            if(!nome) return alert("Dê um nome ao produto!");
+<!-- ════════════════════════════════════════════════════ -->
+<!-- DNS LOOKUP -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="section" id="sec-dns">
+  <div class="section-header">
+    <h2>DNS Lookup <span class="tag tag-api">API REAL</span></h2>
+    <p>Consulta registros DNS reais via Cloudflare DNS-over-HTTPS API (1.1.1.1).</p>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title"><span class="icon">🌐</span> Consulta DNS</div>
+    <div class="input-row">
+      <input type="text" id="dns-domain" placeholder="exemplo.com.br" />
+      <select id="dns-type" style="flex:0;min-width:90px">
+        <option>A</option><option>AAAA</option><option>MX</option>
+        <option>TXT</option><option>NS</option><option>CNAME</option>
+        <option>SOA</option><option>CAA</option>
+      </select>
+      <button class="btn btn-primary" id="dns-btn" onclick="dnsLookup()">CONSULTAR</button>
+    </div>
+    <div id="dns-output" class="terminal" style="min-height:200px">
+<span class="t-muted">// Aguardando consulta DNS...</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon">📡</span> Múltiplos Registros (Reconhecimento)</div>
+    <div class="input-row">
+      <input type="text" id="dns-recon-domain" placeholder="alvo.com.br" />
+      <button class="btn btn-danger" id="dns-recon-btn" onclick="dnsRecon()">RECON COMPLETO</button>
+    </div>
+    <div id="dns-recon-output" class="terminal" style="min-height:180px">
+<span class="t-muted">// Enumeração DNS aguardando...</span>
+    </div>
+  </div>
+</div>
 
-            produtos.push({ id: Date.now(), nome, custo, venda, qtd });
-            salvar();
-            
-            document.getElementById('p-nome').value = '';
-            document.getElementById('p-custo').value = '';
-            document.getElementById('p-venda').value = '';
-            document.getElementById('p-qtd').value = '';
-        }
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SSL -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="section" id="sec-ssl">
+  <div class="section-header">
+    <h2>Análise SSL/TLS <span class="tag tag-api">API REAL</span></h2>
+    <p>Verifica certificado, validade, autoridade emissora e configurações TLS via API pública.</p>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon">🔒</span> Inspetor de Certificado SSL</div>
+    <div class="input-row">
+      <input type="text" id="ssl-domain" placeholder="google.com" />
+      <button class="btn btn-primary" id="ssl-btn" onclick="checkSSL()">VERIFICAR</button>
+    </div>
+    <div id="ssl-output" class="terminal" style="min-height:240px">
+<span class="t-muted">// Insira um domínio para verificar o certificado SSL/TLS</span>
+    </div>
+    <div id="ssl-details" style="margin-top:12px"></div>
+  </div>
+</div>
 
-        function mudarQtd(id, n) {
-            const p = produtos.find(x => x.id === id);
-            p.qtd = Math.max(0, p.qtd + n);
-            salvar();
-        }
+<!-- ════════════════════════════════════════════════════ -->
+<!-- HASH TOOLS -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="section" id="sec-hash">
+  <div class="section-header">
+    <h2>Hash Tools <span class="tag tag-live">LOCAL</span></h2>
+    <p>Geração de hashes criptográficos reais via Web Crypto API nativa do browser.</p>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="icon">🔑</span> Gerador de Hash</div>
+      <textarea id="hash-input" placeholder="Digite ou cole o texto aqui..."></textarea>
+      <div class="input-row" style="margin-top:8px">
+        <button class="btn btn-primary" onclick="generateHashes()">GERAR HASHES</button>
+        <button class="btn btn-ghost"   onclick="clearHash()">LIMPAR</button>
+      </div>
+      <div id="hash-results"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">🔍</span> Identificador de Hash</div>
+      <div class="input-row">
+        <input type="text" id="identify-hash" placeholder="Cole um hash para identificar..." />
+        <button class="btn btn-primary" onclick="identifyHash()">IDENTIFICAR</button>
+      </div>
+      <div id="identify-result" class="terminal" style="min-height:100px">
+<span class="t-muted">// Cole um hash para identificar o algoritmo</span>
+      </div>
+      <div class="card-title" style="margin-top:16px"><span class="icon">📊</span> Entropia de Arquivo</div>
+      <input type="file" id="entropy-file" style="font-size:11px;color:var(--muted);margin-bottom:8px;background:transparent;border:none">
+      <button class="btn btn-ghost" onclick="calcEntropy()">CALCULAR ENTROPIA</button>
+      <div id="entropy-result" style="margin-top:8px"></div>
+    </div>
+  </div>
+</div>
 
-        function deletar(id) {
-            if(confirm("Remover item?")) {
-                produtos = produtos.filter(x => x.id !== id);
-                salvar();
-            }
-        }
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASSWORD -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="section" id="sec-password">
+  <div class="section-header">
+    <h2>Análise de Senha <span class="tag tag-live">LOCAL</span></h2>
+    <p>Cálculo de entropia real, detecção de padrões e estimativa de tempo de quebra por força bruta.</p>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="icon">🔐</span> Analisador de Força</div>
+      <div class="input-row">
+        <input type="text" id="pwd-input" placeholder="Digite uma senha para analisar..." oninput="analyzePwd()" autocomplete="off" />
+      </div>
+      <div class="pwd-bars" id="pwd-bars">
+        <div class="pwd-bar"></div><div class="pwd-bar"></div>
+        <div class="pwd-bar"></div><div class="pwd-bar"></div>
+        <div class="pwd-bar"></div>
+      </div>
+      <div id="pwd-label" style="font-size:11px;color:var(--muted);margin-bottom:12px">Aguardando entrada...</div>
+      <div id="pwd-analysis"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">⚡</span> Gerador de Senha Segura</div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:11px;color:var(--muted)">Comprimento: <span id="len-val">20</span></label>
+        <input type="range" id="pwd-len" min="8" max="64" value="20" oninput="document.getElementById('len-val').textContent=this.value" style="width:100%;margin-top:6px;accent-color:var(--accent)">
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;font-size:11px">
+        <label><input type="checkbox" id="c-upper" checked> Maiúsculas</label>
+        <label><input type="checkbox" id="c-lower" checked> Minúsculas</label>
+        <label><input type="checkbox" id="c-num"   checked> Números</label>
+        <label><input type="checkbox" id="c-sym"   checked> Símbolos</label>
+      </div>
+      <button class="btn btn-success" onclick="generatePwd()" style="width:100%;margin-bottom:12px">GERAR SENHA</button>
+      <div id="gen-pwd-result"></div>
+    </div>
+  </div>
+</div>
 
-        function limparTudo() {
-            if(confirm("Isso vai apagar TUDO. Tem certeza?")) {
-                produtos = [];
-                salvar();
-            }
-        }
-
-        function salvar() {
-            localStorage.setItem(DB_KEY, JSON.stringify(produtos));
-            render();
-        }
-
-        function render() {
-            const corpo = document.getElementById('tabela-corpo');
-            corpo.innerHTML = '';
-
-            produtos.forEach(p => {
-                const esgotado = p.qtd <= 0;
-
-                corpo.innerHTML += `
-                    <tr class="hover:bg-[#1c2128] transition">
-                        <td class="p-4">
-                            <div class="font-bold text-sm ${esgotado ? 'text-gray-500' : 'text-white'}">${p.nome}</div>
-                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${esgotado ? 'bg-red-900/30 text-red-400' : 'bg-green-900/30 text-green-400'}">
-                                ${esgotado ? 'ESGOTADO' : 'EM ESTOQUE'}
-                            </span>
-                        </td>
-                        <td class="p-4 text-center">
-                            <div class="flex items-center justify-center gap-3">
-                                <button onclick="mudarQtd(${p.id}, -1)" class="text-red-500 hover:scale-125 px-2">-</button>
-                                <span class="text-sm font-mono w-4">${p.qtd}</span>
-                                <button onclick="mudarQtd(${p.id}, 1)" class="text-green-500 hover:scale-125 px-2">+</button>
-                            </div>
-                        </td>
-                        <td class="p-4 text-xs text-gray-400">R$ ${p.custo.toFixed(2)}</td>
-                        <td class="p-4 text-sm text-green-400 font-bold">R$ ${p.venda.toFixed(2)}</td>
-                        <td class="p-4 text-right">
-                            <button onclick="deletar(${p.id})" class="text-gray-600 hover:text-red-500 transition">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        render();
-    </script>
-</body>
-</html>
-
+<!-- ════════════════════════════════════════════════════ -->
+<!-- IP / WHOIS -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="section" id="sec-ip">
+  <div class="section-header">
+    <h2>IP & Geolocation <span class="tag tag-api">API REAL</span></h2>
+    <p>Geolocalização, ASN, provedor e informações de roteamento via ip-api.com.</p>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="icon">📡</span> Lookup de IP / Domínio</div>
+      <div class="input-row">
+        <input type="text" id="ip-input" placeholder="8.8.8.8 ou google.com" />
+        <button class="btn btn-primary" id
